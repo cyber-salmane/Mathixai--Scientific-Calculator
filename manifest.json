@@ -1,0 +1,59 @@
+{
+  "name": "Mathix — AI Scientific Calculator",
+  "short_name": "Mathix",
+  "description": "Free AI-powered scientific calculator with step-by-step solutions, graphing, solver, and photo math scanner.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0e17",
+  "theme_color": "#0f0e17",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mathix Calculator"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Calculator",
+      "short_name": "Calc",
+      "description": "Open the scientific calculator",
+      "url": "/#calc",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Solver",
+      "short_name": "Solver",
+      "description": "Open the equation solver",
+      "url": "/#solver",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Photo Scanner",
+      "short_name": "Scan",
+      "description": "Scan a math problem",
+      "url": "/#scan",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
