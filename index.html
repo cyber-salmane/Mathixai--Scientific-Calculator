@@ -9,7 +9,6 @@
 <!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f0e17">
-<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Mathix">
@@ -1019,162 +1018,6 @@ header{
 
 .flib-empty{text-align:center;padding:80px 20px;color:var(--text3)}
 
-/* ═══ SETTINGS ═══ */
-.settings-btn{
-  background:transparent;border:1px solid var(--border2);border-radius:10px;
-  color:var(--text3);font-size:18px;width:36px;height:36px;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;margin-left:8px;
-}
-.settings-btn:hover{color:var(--text);border-color:var(--accent);background:rgba(124,93,249,.1)}
-
-.settings-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;
-  opacity:0;pointer-events:none;transition:opacity .25s;
-}
-.settings-overlay.open{opacity:1;pointer-events:all}
-
-.settings-panel{
-  position:fixed;top:0;right:-380px;width:360px;max-width:100vw;height:100vh;
-  background:var(--s1);border-left:1px solid var(--border);z-index:9999;
-  overflow-y:auto;transition:right .3s cubic-bezier(.4,0,.2,1);
-  display:flex;flex-direction:column;
-}
-.settings-panel.open{right:0}
-
-.settings-header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:18px 20px;border-bottom:1px solid var(--border);
-  position:sticky;top:0;background:var(--s1);z-index:1;
-}
-.settings-title{font-size:16px;font-weight:700;color:var(--text)}
-.settings-close{
-  background:none;border:none;color:var(--text3);font-size:18px;
-  cursor:pointer;padding:4px;border-radius:6px;transition:color .15s;
-}
-.settings-close:hover{color:var(--text)}
-
-.settings-body{padding:16px 20px;display:flex;flex-direction:column;gap:4px}
-
-.settings-section{
-  background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);
-  padding:14px;margin-bottom:10px;
-}
-.settings-section-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
-.settings-section-sub{font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5}
-
-.settings-options{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.sopt{
-  padding:7px 12px;border-radius:8px;border:1px solid var(--border2);
-  background:transparent;color:var(--text2);font-family:var(--sans);font-size:12px;
-  font-weight:500;cursor:pointer;transition:all .15s;
-}
-.sopt:hover{border-color:var(--accent);color:var(--accent2)}
-.sopt.on{background:rgba(124,93,249,.2);border-color:var(--accent);color:var(--accent2);font-weight:700}
-
-.sopt-color{
-  width:28px;height:28px;border-radius:50%;border:2px solid transparent;
-  cursor:pointer;transition:all .15s;
-}
-.sopt-color:hover{transform:scale(1.15)}
-.sopt-color.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
-
-.settings-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
-.settings-row:last-child{border-bottom:none}
-.settings-row-label{font-size:12px;color:var(--text2);font-weight:500}
-.settings-options-inline{display:flex;gap:4px}
-.sopt-sm{
-  padding:5px 10px;border-radius:6px;border:1px solid var(--border2);
-  background:transparent;color:var(--text3);font-family:var(--sans);font-size:11px;
-  font-weight:600;cursor:pointer;transition:all .15s;
-}
-.sopt-sm:hover{border-color:var(--accent);color:var(--accent2)}
-.sopt-sm.on{background:rgba(124,93,249,.2);border-color:var(--accent);color:var(--accent2)}
-
-.settings-install-btn{
-  width:100%;padding:10px;border-radius:10px;border:none;margin-top:4px;
-  background:linear-gradient(135deg,var(--accent),#6366f1);
-  color:#fff;font-family:var(--sans);font-size:14px;font-weight:700;
-  cursor:pointer;transition:opacity .15s;
-}
-.settings-install-btn:hover{opacity:.85}
-.settings-install-btn:disabled{opacity:.4;cursor:default}
-.settings-installed-msg{font-size:12px;color:var(--green2);margin-top:8px;text-align:center}
-
-.settings-danger-btn{
-  padding:7px 14px;border-radius:8px;border:1px solid rgba(248,113,113,.3);
-  background:rgba(248,113,113,.08);color:#f87171;font-family:var(--sans);
-  font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;
-}
-.settings-danger-btn:hover{background:rgba(248,113,113,.18);border-color:#f87171}
-
-.settings-about{text-align:center;padding:8px 0}
-.settings-about-name{font-size:18px;font-weight:700;color:var(--text)}
-.settings-about-sub{font-size:12px;color:var(--text3);margin-top:4px}
-.settings-about-links{margin-top:8px}
-.settings-about-links a{font-size:12px;color:var(--accent2);text-decoration:none}
-.settings-about-links a:hover{text-decoration:underline}
-.settings-about-features{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
-.settings-feat{font-size:11px;color:var(--text2);background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:5px 8px}
-
-/* Light theme */
-body.theme-light{
-  --bg:#f0f2f8;--s1:#ffffff;--s2:#f7f8fc;--s3:#ebedf5;
-  --text:#111827;--text2:#374151;--text3:#9ca3af;
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.12);
-  --border3:rgba(0,0,0,.06);
-}
-body.theme-light .logo-mark{background:var(--accent);color:#fff}
-body.theme-light .nav{background:#fff}
-body.theme-light .kb-btn{background:#fff;color:#111;border-color:rgba(0,0,0,.1)}
-body.theme-light .kb-btn:hover{background:#f3f4f6}
-body.theme-light .kb-eq{background:var(--accent)}
-body.theme-light .kb-ac{background:#fef2f2;color:#ef4444;border-color:rgba(239,68,68,.2)}
-body.theme-light input,body.theme-light textarea,body.theme-light select{
-  background:#fff;color:#111;border-color:rgba(0,0,0,.12);
-}
-body.theme-light .rnum{color:var(--accent)}
-body.theme-light .hero-title,body.theme-light h1{color:#111}
-
-/* Midnight theme — deep space blue/purple */
-body.theme-midnight{
-  --bg:#020008;--s1:#08001a;--s2:#0f0025;--s3:#160035;
-  --text:#e2d9f3;--text2:#b8a9d9;--text3:#7a6a9e;
-  --border:rgba(160,120,255,.12);--border2:rgba(160,120,255,.2);
-  --border3:rgba(160,120,255,.07);
-}
-body.theme-midnight .logo-mark{background:linear-gradient(135deg,#7c5df9,#a855f7)}
-body.theme-midnight .rnum{color:#c084fc}
-body.theme-midnight .kb-btn{background:rgba(160,120,255,.08);border-color:rgba(160,120,255,.15)}
-body.theme-midnight .kb-btn:hover{background:rgba(160,120,255,.15)}
-
-/* ═══ STATISTICS CALCULATOR ═══ */
-.stats-input-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:14px}
-.stats-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.stats-textarea{
-  width:100%;min-height:80px;padding:10px 12px;
-  background:var(--s1);border:1px solid var(--border2);border-radius:var(--r);
-  color:var(--text);font-family:var(--mono);font-size:13px;resize:vertical;outline:none;
-  transition:border-color .15s;line-height:1.5;
-}
-.stats-textarea:focus{border-color:var(--accent)}
-.stats-hint{font-size:11px;color:var(--text3);margin-top:6px}
-.stats-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px}
-.stats-card{
-  background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);
-  padding:12px;text-align:center;
-}
-.stats-card-val{font-size:20px;font-weight:700;color:var(--accent2);font-family:var(--mono);line-height:1.2}
-.stats-card-lbl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
-.stats-section{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:14px;margin-bottom:10px}
-.stats-section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.stats-chart-wrap{position:relative;width:100%}
-.stats-table{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.stats-row{display:contents}
-.stats-key{font-size:12px;color:var(--text2);padding:5px 8px;background:var(--s1);border-radius:6px}
-.stats-val{font-size:12px;color:var(--accent2);font-family:var(--mono);font-weight:600;padding:5px 8px;background:var(--s1);border-radius:6px;text-align:right}
-.stats-sorted{font-family:var(--mono);font-size:12px;color:var(--text2);line-height:1.8;word-break:break-all}
-
 /* ═══ MATRIX CALCULATOR ═══ */
 .mat-layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .mat-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:12px}
@@ -1316,114 +1159,7 @@ body.theme-midnight .kb-btn:hover{background:rgba(160,120,255,.15)}
       <button class="nav-btn nav-scan" onclick="showPage('scan',this)">📷 Scan</button>
       <button class="nav-btn nav-formulas" onclick="showPage('formulas',this)">⚗ Formulas</button>
     </nav>
-    <button class="settings-btn" onclick="openSettings()" title="Settings">⚙</button>
   </header>
-
-  <!-- ═══ SETTINGS PANEL ═══ -->
-  <div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
-  <div class="settings-panel" id="settings-panel">
-    <div class="settings-header">
-      <div class="settings-title">⚙ Settings</div>
-      <button class="settings-close" onclick="closeSettings()">✕</button>
-    </div>
-    <div class="settings-body">
-
-      <!-- Language -->
-      <div class="settings-section">
-        <div class="settings-section-title">🌐 Language</div>
-        <div class="settings-section-sub">AI responses and UI will use this language</div>
-        <div class="settings-options">
-          <button class="sopt on" data-lang="en" onclick="setLang('en',this)">🇬🇧 English</button>
-          <button class="sopt" data-lang="fr" onclick="setLang('fr',this)">🇫🇷 Français</button>
-          <button class="sopt" data-lang="es" onclick="setLang('es',this)">🇪🇸 Español</button>
-          <button class="sopt" data-lang="de" onclick="setLang('de',this)">🇩🇪 Deutsch</button>
-        </div>
-      </div>
-
-      <!-- Theme -->
-      <div class="settings-section">
-        <div class="settings-section-title">🎨 Theme</div>
-        <div class="settings-options">
-          <button class="sopt on" data-theme="dark" onclick="setTheme('dark',this)">🌙 Dark</button>
-          <button class="sopt" data-theme="light" onclick="setTheme('light',this)">☀️ Light</button>
-          <button class="sopt" data-theme="midnight" onclick="setTheme('midnight',this)">🌌 Midnight</button>
-        </div>
-        <div class="settings-section-sub" style="margin-top:10px">Accent color</div>
-        <div class="settings-options" style="margin-top:6px">
-          <button class="sopt-color on" data-color="purple" onclick="setAccent('purple',this)" style="background:#7c5df9"></button>
-          <button class="sopt-color" data-color="cyan" onclick="setAccent('cyan',this)" style="background:#22d3ee"></button>
-          <button class="sopt-color" data-color="green" onclick="setAccent('green',this)" style="background:#34d399"></button>
-          <button class="sopt-color" data-color="orange" onclick="setAccent('orange',this)" style="background:#f59e0b"></button>
-          <button class="sopt-color" data-color="pink" onclick="setAccent('pink',this)" style="background:#ec4899"></button>
-        </div>
-      </div>
-
-      <!-- Calculator preferences -->
-      <div class="settings-section">
-        <div class="settings-section-title">🔢 Calculator</div>
-        <div class="settings-row">
-          <span class="settings-row-label">Angle unit</span>
-          <div class="settings-options-inline">
-            <button class="sopt-sm on" id="angle-deg" onclick="setAngle('deg',this)">DEG</button>
-            <button class="sopt-sm" id="angle-rad" onclick="setAngle('rad',this)">RAD</button>
-          </div>
-        </div>
-        <div class="settings-row">
-          <span class="settings-row-label">Default AI detail</span>
-          <div class="settings-options-inline">
-            <button class="sopt-sm on" id="detail-brief" onclick="setDetail('brief',this)">Brief</button>
-            <button class="sopt-sm" id="detail-normal" onclick="setDetail('normal',this)">Normal</button>
-            <button class="sopt-sm" id="detail-detailed" onclick="setDetail('detailed',this)">Detailed</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Install app -->
-      <div class="settings-section" id="settings-install-section">
-        <div class="settings-section-title">📱 Install App</div>
-        <div class="settings-section-sub">Add Mathix to your home screen for offline access</div>
-        <button class="settings-install-btn" id="settings-install-btn" onclick="triggerInstall()">
-          ⚡ Install Mathix
-        </button>
-        <div class="settings-installed-msg" id="settings-installed-msg" style="display:none">
-          ✓ Already installed on this device
-        </div>
-      </div>
-
-      <!-- Data -->
-      <div class="settings-section">
-        <div class="settings-section-title">🗑 Data</div>
-        <div class="settings-section-sub">Stored locally on your device only</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="settings-danger-btn" onclick="clearHistoryFromSettings()">Clear history</button>
-          <button class="settings-danger-btn" onclick="clearAllData()">Reset all data</button>
-        </div>
-      </div>
-
-      <!-- About -->
-      <div class="settings-section">
-        <div class="settings-section-title">ℹ About Mathix</div>
-        <div class="settings-about">
-          <div class="settings-about-name">Mathix</div>
-          <div class="settings-about-sub">Free AI-powered scientific calculator</div>
-          <div class="settings-about-features">
-            <div class="settings-feat">⚡ Groq AI (Llama 3.3 70B)</div>
-            <div class="settings-feat">🔮 Gemini 2.5 Flash Vision</div>
-            <div class="settings-feat">📐 math.js + Algebrite engine</div>
-            <div class="settings-feat">🌐 Works offline (PWA)</div>
-            <div class="settings-feat">🔒 No account, no data stored</div>
-            <div class="settings-feat">💜 Always free, no paywall</div>
-          </div>
-          <div class="settings-about-links">
-            <a href="https://mathix.pages.dev" target="_blank">mathix.pages.dev</a>
-            <span style="color:var(--text3);margin:0 6px">·</span>
-            <a href="mailto:salmane0313@gmail.com" target="_blank">✉ Contact</a>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
 
   <!-- ═══ CALCULATOR PAGE ═══ -->
   <div id="page-calc" class="page active">
@@ -1576,42 +1312,7 @@ body.theme-midnight .kb-btn:hover{background:rgba(160,120,255,.15)}
             <div class="mat-result-body" id="mat-result-body"></div>
           </div>
         </div>
-
-        <!-- ── STATISTICS CALCULATOR ── -->
-        <div id="stats-ui" style="display:none">
-          <div class="stats-input-card">
-            <div class="stats-label">Enter dataset</div>
-            <textarea id="stats-data" class="stats-textarea"
-              placeholder="Enter numbers separated by commas or spaces&#10;e.g. 4, 8, 15, 16, 23, 42&#10;or paste a column of data"
-              oninput="statsCompute()"></textarea>
-            <div class="stats-hint" id="stats-hint">Enter at least 2 numbers to see statistics</div>
-          </div>
-
-          <div class="stats-results" id="stats-results" style="display:none">
-            <!-- Summary cards -->
-            <div class="stats-cards" id="stats-cards"></div>
-
-            <!-- Frequency / distribution -->
-            <div class="stats-section">
-              <div class="stats-section-title">Distribution</div>
-              <div class="stats-chart-wrap">
-                <canvas id="stats-chart" height="160"></canvas>
-              </div>
-            </div>
-
-            <!-- Full breakdown table -->
-            <div class="stats-section">
-              <div class="stats-section-title">Full breakdown</div>
-              <div class="stats-table" id="stats-table"></div>
-            </div>
-
-            <!-- Sorted data -->
-            <div class="stats-section">
-              <div class="stats-section-title">Sorted data</div>
-              <div class="stats-sorted" id="stats-sorted"></div>
-            </div>
-          </div>
-        </div>
+      </div>
 
       <!-- Right panel -->
       <div class="right">
@@ -2204,7 +1905,7 @@ body.theme-midnight .kb-btn:hover{background:rgba(160,120,255,.15)}
         <div class="complete-msg" id="complete-msg"></div>
         <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
           <button class="qa-btn qa-next" onclick="startPractice()">Practice again</button>
-          <button class="qa-btn qa-steps" onclick="showPage('calc',navBtn('calc'))">Back to calculator</button>
+          <button class="qa-btn qa-steps" onclick="showPage('calc',document.querySelector('.nav-btn'))">Back to calculator</button>
         </div>
       </div>
     </div>
@@ -2467,10 +2168,8 @@ updateApiBadge();
 function showPage(id, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-  const page = document.getElementById('page-' + id);
-  if (!page) return;
-  page.classList.add('active');
-  if (btn) btn.classList.add('on');
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('on');
   if (id === 'graph') initGraph();
   if (id === 'conv') { convertLen(); convertTmp(); convertMass(); convertBase(); convertSpd(); convertArea(); convertVol(); convertTime(); convertNrg(); convertPres(); }
   if (id === 'practice') initPractice();
@@ -2973,7 +2672,6 @@ function selTab(el, t) {
 
   // Show/hide matrix UI
   const matUI = document.getElementById('matrix-ui');
-  const statsUI = document.getElementById('stats-ui');
   const kbd = document.getElementById('kb');
   const fnModes = document.getElementById('fn-modes');
   const fnRow = document.getElementById('fn-row');
@@ -2981,7 +2679,6 @@ function selTab(el, t) {
 
   if (t === 'mat') {
     if (matUI) matUI.style.display = 'block';
-    if (statsUI) statsUI.style.display = 'none';
     if (kbd) kbd.style.display = 'none';
     if (fnModes) fnModes.style.display = 'none';
     if (fnRow) fnRow.style.display = 'none';
@@ -2990,19 +2687,8 @@ function selTab(el, t) {
     return;
   }
 
-  if (t === 'stat') {
-    if (matUI) matUI.style.display = 'none';
-    if (statsUI) statsUI.style.display = 'block';
-    if (kbd) kbd.style.display = 'none';
-    if (fnModes) fnModes.style.display = 'none';
-    if (fnRow) fnRow.style.display = 'none';
-    if (actionRow) actionRow.style.display = 'none';
-    return;
-  }
-
-  // Regular tabs
+  // Show regular keyboard
   if (matUI) matUI.style.display = 'none';
-  if (statsUI) statsUI.style.display = 'none';
   if (kbd) kbd.style.display = 'grid';
   if (fnModes) fnModes.style.display = 'flex';
   if (fnRow) fnRow.style.display = 'grid';
@@ -3027,289 +2713,6 @@ function selTab(el, t) {
   const firstMode = modes[0];
   const firstBtn = Array.from(allFmBtns).find(b => b.getAttribute('onclick').includes(`'${firstMode}'`));
   if (firstBtn) setFm(firstMode, firstBtn);
-}
-
-/* ═══════════════════════════════════════════════
-   SETTINGS PANEL
-═══════════════════════════════════════════════ */
-const SETTINGS_KEY = 'mathix_settings';
-const defaultSettings = { lang:'en', theme:'dark', accent:'purple', angle:'deg', detail:'brief' };
-let appSettings = { ...defaultSettings };
-
-const TRANSLATIONS = {
-  en:{ calc:'Calculator',graph:'Graphing',solver:'Solver',conv:'Converter',practice:'✦ Practice',scan:'📷 Scan',formulas:'⚗ Formulas',hero_label:'free step-by-step · AI-powered',hero_title:'Mathematics,',hero_em:'beautifully',hero_end:'solved.',hero_sub:'Every calculation explained step by step — for free. No paywall, no account needed.',pill:'Steps are always free — no account needed',show_steps:'✦ Show steps',copy_result:'Copy result',share_link:'Share link',history:'History',clear_all:'Clear all',ready:'Ready to solve',ready_sub:'Enter an expression then tap "Show steps"',tab_std:'Standard',tab_sci:'Scientific',tab_calc:'Calculus',tab_stat:'Statistics',tab_mat:'Matrices' },
-  fr:{ calc:'Calculatrice',graph:'Graphes',solver:'Solveur',conv:'Convertisseur',practice:'✦ Entraînement',scan:'📷 Scanner',formulas:'⚗ Formules',hero_label:'pas à pas · propulsé par IA',hero_title:'Mathématiques,',hero_em:'magnifiquement',hero_end:'résolues.',hero_sub:'Chaque calcul expliqué étape par étape — gratuitement.',pill:'Les étapes sont toujours gratuites',show_steps:'✦ Voir les étapes',copy_result:'Copier',share_link:'Partager',history:'Historique',clear_all:'Tout effacer',ready:'Prêt à résoudre',ready_sub:'Entrez une expression puis appuyez sur "Voir les étapes"',tab_std:'Standard',tab_sci:'Scientifique',tab_calc:'Calcul',tab_stat:'Statistiques',tab_mat:'Matrices' },
-  es:{ calc:'Calculadora',graph:'Gráficas',solver:'Solucionador',conv:'Convertidor',practice:'✦ Práctica',scan:'📷 Escanear',formulas:'⚗ Fórmulas',hero_label:'paso a paso · con IA',hero_title:'Matemáticas,',hero_em:'bellamente',hero_end:'resueltas.',hero_sub:'Cada cálculo explicado paso a paso — gratis.',pill:'Los pasos son siempre gratuitos',show_steps:'✦ Ver pasos',copy_result:'Copiar',share_link:'Compartir',history:'Historial',clear_all:'Borrar todo',ready:'Listo para resolver',ready_sub:'Ingresa una expresión y toca "Ver pasos"',tab_std:'Estándar',tab_sci:'Científico',tab_calc:'Cálculo',tab_stat:'Estadística',tab_mat:'Matrices' },
-  de:{ calc:'Rechner',graph:'Graphen',solver:'Gleichungslöser',conv:'Umrechner',practice:'✦ Übung',scan:'📷 Scannen',formulas:'⚗ Formeln',hero_label:'Schritt für Schritt · KI-gestützt',hero_title:'Mathematik,',hero_em:'wunderschön',hero_end:'gelöst.',hero_sub:'Jede Berechnung Schritt für Schritt erklärt — kostenlos.',pill:'Schritte sind immer kostenlos',show_steps:'✦ Schritte zeigen',copy_result:'Kopieren',share_link:'Teilen',history:'Verlauf',clear_all:'Alles löschen',ready:'Bereit zum Lösen',ready_sub:'Ausdruck eingeben und "Schritte zeigen" drücken',tab_std:'Standard',tab_sci:'Wissenschaft',tab_calc:'Analysis',tab_stat:'Statistik',tab_mat:'Matrizen' },
-};
-
-function tr(key){ return (TRANSLATIONS[appSettings.lang]||TRANSLATIONS.en)[key]||TRANSLATIONS.en[key]||key; }
-
-function loadSettings(){
-  try{ const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'{}'); appSettings={...defaultSettings,...s}; }
-  catch(e){ appSettings={...defaultSettings}; }
-  applySettings(false); // skip translations on startup — DOM may not be ready
-}
-function saveSettings(){ localStorage.setItem(SETTINGS_KEY,JSON.stringify(appSettings)); }
-
-function applySettings(translateUI = true){
-  const keep=Array.from(document.body.classList).filter(c=>!c.startsWith('theme-')&&!c.startsWith('lang-'));
-  document.body.className=keep.join(' ');
-  if(appSettings.theme!=='dark') document.body.classList.add(`theme-${appSettings.theme}`);
-  if(appSettings.lang!=='en') document.body.classList.add(`lang-${appSettings.lang}`);
-  const accents={purple:['#7c5df9','#a78bfa'],cyan:['#0891b2','#22d3ee'],green:['#059669','#34d399'],orange:['#d97706','#f59e0b'],pink:['#db2777','#ec4899']};
-  const [ac,ac2]=accents[appSettings.accent]||accents.purple;
-  document.documentElement.style.setProperty('--accent',ac);
-  document.documentElement.style.setProperty('--accent2',ac2);
-  if(translateUI) applyTranslations();
-  document.querySelectorAll('.dt').forEach(b=>b.classList.remove('on'));
-  const md=document.querySelector(`.dt[onclick*="${appSettings.detail}"]`); if(md) md.classList.add('on');
-}
-
-function applyTranslations(){
-  const nm={calc:tr('calc'),graph:tr('graph'),solver:tr('solver'),conv:tr('conv')};
-  document.querySelectorAll('.nav-btn').forEach(btn=>{
-    const m=btn.getAttribute('onclick')?.match(/showPage\('(\w+)'/); if(!m) return;
-    if(nm[m[1]]) btn.textContent=nm[m[1]];
-    else if(m[1]==='practice') btn.textContent=tr('practice');
-    else if(m[1]==='scan') btn.textContent=tr('scan');
-    else if(m[1]==='formulas') btn.textContent=tr('formulas');
-  });
-  // Calculator sub-tabs
-  document.querySelectorAll('.tab').forEach(tab=>{
-    const oc=tab.getAttribute('onclick')||'';
-    if(oc.includes("'std'")) tab.textContent=tr('tab_std');
-    else if(oc.includes("'sci'")) tab.textContent=tr('tab_sci');
-    else if(oc.includes("'calc'")) tab.textContent=tr('tab_calc');
-    else if(oc.includes("'stat'")) tab.textContent=tr('tab_stat');
-    else if(oc.includes("'mat'")) tab.textContent=tr('tab_mat');
-  });
-  const hl=document.querySelector('.hero-eye'); if(hl) hl.textContent=tr('hero_label');
-  const hh=document.querySelector('#page-calc h1'); if(hh) hh.innerHTML=`${tr('hero_title')}<br><em>${tr('hero_em')}</em> ${tr('hero_end')}`;
-  const hs=document.querySelector('#page-calc .hero-sub'); if(hs) hs.textContent=tr('hero_sub');
-  const hp=document.querySelector('#page-calc .pill'); if(hp) hp.textContent=tr('pill');
-  const sb=document.querySelector('.act-steps'); if(sb) sb.textContent=tr('show_steps');
-  const cb=document.querySelector('.act-copy'); if(cb) cb.textContent=tr('copy_result');
-  const shb=document.querySelector('.act-share'); if(shb) shb.textContent=tr('share_link');
-  const ht=document.querySelector('.hist-card .ctitle'); if(ht) ht.textContent=tr('history');
-  const ca=document.querySelector('[onclick="clearHist()"]'); if(ca) ca.textContent=tr('clear_all');
-  const rt=document.querySelector('.ready-title'); if(rt) rt.textContent=tr('ready');
-  const rs=document.querySelector('.ready-sub'); if(rs) rs.textContent=tr('ready_sub');
-}
-
-function openSettings(){
-  document.querySelectorAll('.sopt[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang===appSettings.lang));
-  document.querySelectorAll('.sopt[data-theme]').forEach(b=>b.classList.toggle('on',b.dataset.theme===appSettings.theme));
-  document.querySelectorAll('.sopt-color[data-color]').forEach(b=>b.classList.toggle('on',b.dataset.color===appSettings.accent));
-  document.querySelectorAll('.sopt-sm[id^="angle-"]').forEach(b=>b.classList.toggle('on',b.id===`angle-${appSettings.angle}`));
-  document.querySelectorAll('.sopt-sm[id^="detail-"]').forEach(b=>b.classList.toggle('on',b.id===`detail-${appSettings.detail}`));
-  const installed=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true||!!localStorage.getItem('mathix_pwa_installed');
-  const ib=document.getElementById('settings-install-btn');
-  const im=document.getElementById('settings-installed-msg');
-  if(installed){ if(ib)ib.style.display='none'; if(im)im.style.display='block'; }
-  else if(deferredInstallPrompt){ if(ib){ib.style.display='block';ib.disabled=false;ib.textContent='⚡ Install Mathix';} if(im)im.style.display='none'; }
-  else{ if(ib){ib.style.display='block';ib.disabled=true;ib.textContent='Open in Chrome/Edge to install';} if(im)im.style.display='none'; }
-  document.getElementById('settings-panel').classList.add('open');
-  document.getElementById('settings-overlay').classList.add('open');
-}
-function closeSettings(){
-  document.getElementById('settings-panel').classList.remove('open');
-  document.getElementById('settings-overlay').classList.remove('open');
-}
-function setLang(lang,btn){ appSettings.lang=lang; saveSettings(); applySettings(false); setTimeout(()=>applyTranslations(),50); document.querySelectorAll('.sopt[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang)); closeSettings(); toast(`✓ Language changed — AI will respond in ${btn.textContent.trim()}`); }
-function setTheme(theme,btn){ appSettings.theme=theme; saveSettings(); applySettings(); document.querySelectorAll('.sopt[data-theme]').forEach(b=>b.classList.toggle('on',b.dataset.theme===theme)); }
-function setAccent(color,btn){ appSettings.accent=color; saveSettings(); applySettings(); document.querySelectorAll('.sopt-color').forEach(b=>b.classList.toggle('on',b.dataset.color===color)); }
-function setAngle(unit,btn){ appSettings.angle=unit; saveSettings(); document.querySelectorAll('.sopt-sm[id^="angle-"]').forEach(b=>b.classList.toggle('on',b.id===`angle-${unit}`)); toast(`Angle unit: ${unit.toUpperCase()}`); }
-function setDetail(level,btn){ appSettings.detail=level; saveSettings(); applySettings(); document.querySelectorAll('.sopt-sm[id^="detail-"]').forEach(b=>b.classList.toggle('on',b.id===`detail-${level}`)); }
-function clearHistoryFromSettings(){ if(!confirm('Clear all calculation history?')) return; history=[]; localStorage.removeItem('mathix_hist'); renderHist(); toast('✓ History cleared'); }
-function clearAllData(){ if(!confirm('Reset ALL Mathix data? This cannot be undone.')) return; Object.keys(localStorage).filter(k=>k.startsWith('mathix')).forEach(k=>localStorage.removeItem(k)); appSettings={...defaultSettings}; saveSettings(); applySettings(); toast('✓ All data reset'); }
-
-if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',loadSettings); } else { loadSettings(); }
-
-const _origCallAIBase=callAI;
-callAI=async function(messages,maxTokens,system){
-  const li={fr:'Respond entirely in French.',ar:'Respond entirely in Arabic.',es:'Respond entirely in Spanish.',de:'Respond entirely in German.'};
-  const ln=li[appSettings.lang]; if(ln) system=system?`${system} ${ln}`:ln;
-  return _origCallAIBase(messages,maxTokens,system);
-};
-
-
-let statsChart = null;
-
-function parseStatsData() {
-  const raw = document.getElementById('stats-data').value;
-  const nums = raw.split(/[\s,;|\n\t]+/)
-    .map(s => s.trim())
-    .filter(s => s.length > 0)
-    .map(Number)
-    .filter(n => !isNaN(n));
-  return nums;
-}
-
-function statsCompute() {
-  const data = parseStatsData();
-  const hint = document.getElementById('stats-hint');
-  const results = document.getElementById('stats-results');
-
-  if (data.length < 2) {
-    hint.textContent = data.length === 1 ? 'Enter at least 2 numbers' : 'Enter numbers separated by commas or spaces';
-    results.style.display = 'none';
-    return;
-  }
-
-  hint.textContent = `${data.length} values loaded`;
-  results.style.display = 'block';
-
-  const sorted = [...data].sort((a, b) => a - b);
-  const n = data.length;
-
-  // Core statistics
-  const sum = data.reduce((a, b) => a + b, 0);
-  const mean = sum / n;
-  const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
-  const sampleVar = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / (n - 1);
-  const std = Math.sqrt(variance);
-  const sampleStd = Math.sqrt(sampleVar);
-  const median = n % 2 === 0
-    ? (sorted[n/2 - 1] + sorted[n/2]) / 2
-    : sorted[Math.floor(n/2)];
-
-  // Mode
-  const freq = {};
-  data.forEach(v => freq[v] = (freq[v] || 0) + 1);
-  const maxFreq = Math.max(...Object.values(freq));
-  const modes = Object.keys(freq).filter(k => freq[k] === maxFreq).map(Number);
-  const modeStr = maxFreq === 1 ? 'No mode' : modes.join(', ');
-
-  // Quartiles
-  const q1 = sorted[Math.floor(n * 0.25)];
-  const q3 = sorted[Math.floor(n * 0.75)];
-  const iqr = q3 - q1;
-
-  // Range, skewness, kurtosis
-  const range = sorted[n-1] - sorted[0];
-  const skewness = data.reduce((a, b) => a + Math.pow((b - mean) / std, 3), 0) / n;
-  const kurtosis = data.reduce((a, b) => a + Math.pow((b - mean) / std, 4), 0) / n - 3;
-
-  const fmt = v => typeof v === 'number' ? parseFloat(v.toPrecision(6)).toString() : v;
-
-  // Summary cards
-  const cards = [
-    { val: fmt(mean), lbl: 'Mean' },
-    { val: fmt(median), lbl: 'Median' },
-    { val: modeStr, lbl: 'Mode' },
-    { val: fmt(std), lbl: 'Std Dev (pop)' },
-    { val: fmt(sampleStd), lbl: 'Std Dev (sample)' },
-    { val: fmt(variance), lbl: 'Variance (pop)' },
-    { val: fmt(range), lbl: 'Range' },
-    { val: fmt(sum), lbl: 'Sum' },
-    { val: n, lbl: 'Count' },
-    { val: fmt(sorted[0]), lbl: 'Min' },
-    { val: fmt(sorted[n-1]), lbl: 'Max' },
-    { val: fmt(iqr), lbl: 'IQR' },
-  ];
-
-  document.getElementById('stats-cards').innerHTML = cards.map(c =>
-    `<div class="stats-card">
-      <div class="stats-card-val">${c.val}</div>
-      <div class="stats-card-lbl">${c.lbl}</div>
-    </div>`
-  ).join('');
-
-  // Full breakdown table
-  const tableRows = [
-    ['Mean', fmt(mean)],
-    ['Median', fmt(median)],
-    ['Mode', modeStr],
-    ['Std Dev (population)', fmt(std)],
-    ['Std Dev (sample)', fmt(sampleStd)],
-    ['Variance (population)', fmt(variance)],
-    ['Variance (sample)', fmt(sampleVar)],
-    ['Sum', fmt(sum)],
-    ['Count (n)', n],
-    ['Min', fmt(sorted[0])],
-    ['Max', fmt(sorted[n-1])],
-    ['Range', fmt(range)],
-    ['Q1 (25th percentile)', fmt(q1)],
-    ['Q2 / Median', fmt(median)],
-    ['Q3 (75th percentile)', fmt(q3)],
-    ['IQR', fmt(iqr)],
-    ['Skewness', fmt(skewness)],
-    ['Excess Kurtosis', fmt(kurtosis)],
-  ];
-
-  document.getElementById('stats-table').innerHTML = tableRows.map(([k, v]) =>
-    `<div class="stats-key">${k}</div><div class="stats-val">${v}</div>`
-  ).join('');
-
-  // Sorted data
-  document.getElementById('stats-sorted').textContent = sorted.join(', ');
-
-  // Histogram chart
-  renderStatsChart(sorted, mean, std);
-}
-
-function renderStatsChart(sorted, mean, std) {
-  const canvas = document.getElementById('stats-chart');
-  if (!canvas) return;
-
-  // Build bins
-  const n = sorted.length;
-  const binCount = Math.min(Math.ceil(Math.sqrt(n)), 15);
-  const min = sorted[0], max = sorted[n-1];
-  const binSize = (max - min) / binCount || 1;
-  const bins = Array(binCount).fill(0);
-  const labels = [];
-
-  for (let i = 0; i < binCount; i++) {
-    const lo = min + i * binSize;
-    const hi = lo + binSize;
-    labels.push(parseFloat(lo.toPrecision(3)).toString());
-    sorted.forEach(v => {
-      if (v >= lo && (v < hi || i === binCount - 1)) bins[i]++;
-    });
-  }
-
-  if (statsChart) { statsChart.destroy(); statsChart = null; }
-
-  if (typeof Chart === 'undefined') return; // Chart.js not loaded yet
-
-  statsChart = new Chart(canvas, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Frequency',
-        data: bins,
-        backgroundColor: 'rgba(124,93,249,0.5)',
-        borderColor: 'rgba(124,93,249,0.8)',
-        borderWidth: 1,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => `Value ≥ ${items[0].label}`,
-            label: (item) => `Count: ${item.raw}`
-          }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: '#888', font: { size: 10 }, maxTicksLimit: 8 },
-          grid: { display: false }
-        },
-        y: {
-          ticks: { color: '#888', font: { size: 10 } },
-          grid: { color: 'rgba(255,255,255,0.05)' }
-        }
-      }
-    }
-  });
 }
 
 /* ═══════════════════════════════════════════════
@@ -3617,10 +3020,13 @@ function clearSolver() {
 function loadSolverIntoCalc() {
   const raw = document.getElementById('solver-input').value.trim();
   if (!raw) return;
-  showPage('calc', navBtn('calc'));
-  exprEl.value = raw; curExpr = raw;
+  const calcBtn = document.querySelector('.nav-btn');
+  showPage('calc', calcBtn);
+  exprEl.value = raw;
+  curExpr = raw;
   curResult = document.getElementById('sr-val').textContent;
-  rnumEl.textContent = curResult; reqEl.style.opacity = 1;
+  rnumEl.textContent = curResult;
+  reqEl.style.opacity = 1;
   toast('Loaded into calculator!');
 }
 
@@ -4490,15 +3896,24 @@ function shareGraph(fn) {
 
   if (!expr) return;
 
+  // Switch to the right tab first
+  const tabBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => {
+    const t = b.textContent.trim().toLowerCase();
+    return tab === 'calc' ? t === 'calculator' :
+           tab === 'solver' ? t === 'solver' :
+           tab === 'graph' ? t === 'graphing' : false;
+  });
+
   if (tab === 'calc') {
-    const btn = navBtn('calc'); if (btn) showPage('calc', btn);
-    exprEl.value = expr; curExpr = expr;
+    if (tabBtn) showPage('calc', tabBtn);
+    exprEl.value = expr;
+    curExpr = expr;
     if (result) { curResult = result; rnumEl.textContent = result; reqEl.style.opacity = 1; }
     else liveCalc();
     toast('✓ Shared calculation loaded!');
 
   } else if (tab === 'solver') {
-    const btn = navBtn('solver'); if (btn) showPage('solver', btn);
+    if (tabBtn) showPage('solver', tabBtn);
     setTimeout(() => {
       const inp = document.getElementById('solver-input');
       if (inp) { inp.value = expr; }
@@ -4507,16 +3922,22 @@ function shareGraph(fn) {
     }, 100);
 
   } else if (tab === 'graph') {
-    const btn = navBtn('graph'); if (btn) showPage('graph', btn);
+    if (tabBtn) showPage('graph', tabBtn);
+    // Support multiple expr params for multi-function graphs
     const allExprs = p.getAll('expr');
     setTimeout(() => {
-      graphFns = allExprs.length > 1 ? allExprs : (graphFns[0] = expr, graphFns);
+      if (allExprs.length > 1) {
+        graphFns = allExprs;
+      } else {
+        graphFns[0] = expr;
+      }
       renderFnInputs();
       if (typeof drawGraph === 'function') drawGraph();
       toast('✓ Shared graph loaded!');
     }, 200);
   }
 
+  // Clean URL after restore so sharing works cleanly
   history.replaceState({}, '', location.pathname);
 })();
 
@@ -4770,33 +4191,22 @@ function setSolvingText(text) {
 
 // Returns array of problem strings (1 or many)
 async function extractAllProblemsFromImage(base64, mimeType) {
-  // Two-pass approach:
-  // Pass 1: Ask Gemini to just COUNT and NAME the exercises/sections
-  // Pass 2: Extract each one properly
-  // This is far more reliable than asking for everything at once
-
-  const prompt = `You are looking at a math worksheet or problem sheet.
-
-Your task: List ALL exercises or problems you can see, grouped by section.
-
-STRICT OUTPUT FORMAT — return ONLY a JSON array, nothing else:
-[
-  "Exercice 1: x-9=3, x+5/6=1/3, -2x=3, -5x=-2.5, -x/7=-3/8",
-  "Exercice 2: 11x-7=-28, 7x-14=-28, 4(x-2)+7(x-2)=-22, 7(x+11)-8(-x+5)=1+6x, 2x+11=-3(x-7)+3(x-2)",
-  "Exercice 3: (-x+3)(x+2)=3x-9, 3x=7-4x, 8x=12x+4, 5-x=-8x",
-  "Word problem: A father is 27 years old..."
-]
+  const prompt = `This image contains math problems. Extract them into a clean JSON array.
 
 RULES:
-- Include ALL exercises — do not skip any
-- For equations: use ^ for powers, sqrt() for roots, / for fractions
-- For word problems: copy the problem text as-is
-- Group equations that belong to the same exercise on ONE line
-- Return ONLY the JSON array, no explanation, no markdown
+- If there are exercises/groups (e.g. "Exercice 1", "Exercise 2"), return one entry per exercise group, like: "Exercise 1: x-9=3, x+5/6=1/3, -2x=3"
+- If there are individual standalone problems, return one entry per problem
+- Use standard notation: ^ for powers, sqrt() for roots, * for multiplication, / for division
+- Keep fractions as a/b (e.g. 5/6, -3/8)
+- Maximum 15 entries total — group small related equations together
+- Return ONLY a valid JSON array of strings, no markdown, no explanation
 
-If you see nothing mathematical: []`;
+Example output for a worksheet:
+["Exercise 1: x-9=3, x+5/6=1/3, -2x=3, -5x=-2.5, -x/7=-3/8", "Exercise 2: 11x-7=-28, 7x-14=-28, 4(x-2)+7(x-2)=-22"]
 
-  const callVision = async () => {
+If nothing mathematical found, return: []`;
+
+  try {
     const resp = await fetch('https://mathixai.salmane0313.workers.dev/api/vision', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -4804,37 +4214,30 @@ If you see nothing mathematical: []`;
     });
     if (!resp.ok) throw new Error('Vision API error ' + resp.status);
     const data = await resp.json();
-    return (data.text || '').trim();
-  };
+    let raw = (data.text || '').trim();
 
-  try {
-    setSolvingText('Reading your image…');
-    let raw = await callVision();
-
-    // Strip markdown fences
+    // Strip markdown fences if present
     raw = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
 
-    // Try JSON parse
+    // Try to extract a JSON array — find first [ ... ] block
     const arrMatch = raw.match(/\[[\s\S]*\]/);
     if (arrMatch) {
       try {
         const parsed = JSON.parse(arrMatch[0]);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed.filter(p => p && String(p).trim().length > 0).map(p => String(p).trim());
         }
       } catch(e) { /* fall through */ }
     }
 
-    // Fallback: treat non-empty lines as separate problems
+    // Fallback: line-based extraction
     const lines = raw.split('\n')
-      .map(l => l.replace(/^[-•*\d.)\s"]+/, '').replace(/[",]+$/, '').trim())
-      .filter(l => l.length > 3 && /[0-9x=\+\-\*\/\^√∫\(]/.test(l));
+      .map(l => l.replace(/^[-•*\d.)\s]+/, '').trim())
+      .filter(l => l.length > 1 && /[0-9x+\-*/=^()√∫]/.test(l));
     if (lines.length > 0) return lines;
 
-    // Last resort: return whole text if it looks mathematical
-    if (/[0-9x=]/.test(raw) && raw.length < 600) return [raw];
+    if (/[0-9x+\-*/=^()√∫]/.test(raw) && raw.length < 400) return [raw];
     return [];
-
   } catch(e) {
     console.error('Vision error:', e);
     throw new Error('Vision API not available — ' + e.message);
@@ -4962,11 +4365,13 @@ function showSolution(problem, answer, steps) {
 
 function loadScannedIntoCalc() {
   if (!scannedProblem) return;
-  showPage('calc', navBtn('calc'));
+  const calcBtn = document.querySelector('.nav-btn');
+  showPage('calc', calcBtn);
   document.getElementById('expr').value = scannedProblem;
   document.getElementById('rnum').textContent = scannedAnswer;
   document.getElementById('req').style.opacity = 1;
-  curExpr = scannedProblem; curResult = scannedAnswer;
+  curExpr = scannedProblem;
+  curResult = scannedAnswer;
   toast('Problem loaded into calculator!');
 }
 
@@ -5815,17 +5220,11 @@ function flibRender() {
   }).join('');
 }
 
-// Helper: find nav button by page id (works regardless of language)
-function navBtn(pageId) {
-  return Array.from(document.querySelectorAll('.nav-btn'))
-    .find(b => b.getAttribute('onclick')?.includes(`'${pageId}'`));
-}
-
 function flibToCalc(i) {
   const f = window._flibFiltered[i];
   if (!f) return;
-  const btn = navBtn('calc');
-  showPage('calc', btn || document.querySelector('.nav-btn'));
+  const calcBtn = document.querySelector('.nav-btn');
+  showPage('calc', calcBtn);
   const inp = document.getElementById('expr');
   if (inp) { inp.value = f.calc; inp.dispatchEvent(new Event('input')); }
   toast('✓ Formula loaded into calculator');
@@ -5834,8 +5233,8 @@ function flibToCalc(i) {
 function flibToSolver(i) {
   const f = window._flibFiltered[i];
   if (!f) return;
-  const btn = navBtn('solver');
-  if (btn) showPage('solver', btn);
+  const solverBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.trim() === 'Solver');
+  if (solverBtn) showPage('solver', solverBtn);
   setTimeout(() => {
     const inp = document.getElementById('solver-input');
     if (inp) { inp.value = f.solver; inp.focus(); }
@@ -5846,8 +5245,8 @@ function flibToSolver(i) {
 function flibToGraph(i) {
   const f = window._flibFiltered[i];
   if (!f) return;
-  const btn = navBtn('graph');
-  if (btn) showPage('graph', btn);
+  const graphBtn = Array.from(document.querySelectorAll('.nav-btn')).find(b => b.textContent.trim() === 'Graphing');
+  if (graphBtn) showPage('graph', graphBtn);
   setTimeout(() => {
     graphFns[0] = f.graph;
     renderFnInputs();
