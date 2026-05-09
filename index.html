@@ -318,6 +318,142 @@ html[data-font="large"]  .step-math{font-size:15px}
 html[data-font="large"]  .step-why{font-size:14px}
 html[data-font="large"]  .chat-msg .bubble{font-size:14px}
 
+/* Mobile bottom navigation — visible only ≤700px. Sticky to the bottom with safe-area padding. */
+.mobile-nav{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:90;
+  background:rgba(8,8,26,0.92);backdrop-filter:blur(16px);
+  border-top:1px solid var(--border2);
+  padding:6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  justify-content:space-around;align-items:stretch;gap:2px;
+}
+.mnav-btn{
+  flex:1;min-width:0;background:transparent;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;padding:8px 4px;border-radius:10px;
+  color:var(--text3);font-family:var(--sans);transition:color .15s,background .15s;
+}
+.mnav-btn:hover{background:var(--s2);color:var(--text2)}
+.mnav-btn.on{color:var(--accent2)}
+.mnav-btn.on .mnav-icon{transform:scale(1.1);text-shadow:0 0 12px rgba(124,93,249,.6)}
+.mnav-icon{font-size:18px;font-family:var(--mono);transition:transform .2s,text-shadow .2s}
+.mnav-label{font-size:10px;font-weight:600;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media(max-width:700px){
+  .mobile-nav{display:flex}
+  .nav{display:none !important}              /* hide top nav on mobile, bottom takes over */
+  .app{padding-bottom:84px}                  /* leave room for the bottom bar */
+  /* Mobile-only header tweak: stretch logo + keep gear/streak/conn on the right */
+  header{flex-wrap:nowrap !important;gap:8px;padding:14px 0 8px !important;position:static !important}
+  .settings-gear{position:static !important;margin-left:auto !important}
+}
+
+/* Daily math fact — rotates daily, shown only on the empty calculator */
+.daily-fact{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;margin:14px 18px 0;
+  background:linear-gradient(135deg, rgba(124,93,249,.08), rgba(34,211,238,.05));
+  border:1px solid var(--border);border-radius:14px;
+  font-size:12.5px;line-height:1.55;color:var(--text2);
+  animation:fU .5s ease both .15s;
+}
+.daily-fact-icon{font-size:16px;flex-shrink:0;margin-top:1px;filter:drop-shadow(0 1px 4px rgba(245,158,11,.3))}
+.daily-fact-label{font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;font-size:10.5px;margin-right:2px;flex-shrink:0;align-self:center}
+.daily-fact-text{flex:1}
+
+/* "What's next?" follow-up chips — appear under the result after a calculation */
+.whats-next{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  padding:14px 18px 0;animation:fU .35s ease both;
+}
+.whats-next-label{
+  font-size:11px;color:var(--text3);font-weight:600;
+  text-transform:uppercase;letter-spacing:.08em;
+  margin-right:4px;width:100%;margin-bottom:2px;
+}
+.whats-next-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--sans);font-size:12px;font-weight:600;
+  background:var(--s2);border:1px solid var(--border2);
+  color:var(--text2);padding:6px 11px;border-radius:14px;
+  cursor:pointer;transition:all .18s;
+}
+.whats-next-chip:hover{
+  background:rgba(124,93,249,.12);border-color:var(--accent);color:var(--accent2);
+  transform:translateY(-1px);
+}
+.whats-next-chip:active{transform:translateY(0)}
+.whats-next-icon{font-size:13px;opacity:.85;font-family:var(--mono)}
+
+/* Streak badge in the header — shown only on consecutive-day visits */
+.streak-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:700;font-family:var(--mono);
+  color:var(--gold2);background:rgba(245,158,11,.12);
+  border:1px solid rgba(245,158,11,.3);
+  padding:4px 10px;border-radius:14px;
+  margin-left:6px;flex-shrink:0;cursor:default;
+  animation:streakIn .5s cubic-bezier(.4,1.5,.5,1) both;
+}
+@keyframes streakIn{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@media(max-width:600px){.streak-badge{font-size:11px;padding:3px 8px}}
+
+/* Animated "M" logo — subtle breathe in idle, deliberate spin when AI is working */
+.logo-mark{
+  transition:transform .25s,box-shadow .25s;
+  animation:logoBreathe 4s ease-in-out infinite;
+}
+.logo-mark:hover{transform:rotate(-6deg) scale(1.05);box-shadow:0 6px 28px rgba(124,93,249,.55)}
+@keyframes logoBreathe{
+  0%,100%{box-shadow:0 4px 20px rgba(124,93,249,.4)}
+  50%{box-shadow:0 4px 26px rgba(124,93,249,.55)}
+}
+.logo-mark.thinking{animation:logoSpin 1s linear infinite}
+@keyframes logoSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+html[data-motion="reduced"] .logo-mark{animation:none}
+
+/* Skeleton loader for AI step blocks — feels structured rather than vague */
+.step-skeleton{
+  display:flex;gap:14px;padding:14px;
+  border-bottom:1px solid var(--border);
+  animation:fU .3s ease both;
+}
+.step-skeleton-n{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(90deg,var(--s2),var(--s3),var(--s2));
+  background-size:200% 100%;animation:sh 1.4s linear infinite;flex-shrink:0;
+}
+.step-skeleton-body{flex:1;display:flex;flex-direction:column;gap:8px}
+.step-skeleton-line{
+  height:14px;border-radius:6px;
+  background:linear-gradient(90deg,var(--s2),var(--s3),var(--s2));
+  background-size:200% 100%;animation:sh 1.4s linear infinite;
+}
+.step-skeleton-line.short{width:65%}
+.step-skeleton-line.medium{width:88%}
+
+/* History search + pin */
+.hist-toolbar{
+  display:flex;align-items:center;gap:6px;padding:0 14px 8px;
+}
+.hist-search{
+  flex:1;background:var(--s2);border:1px solid var(--border);
+  border-radius:10px;padding:7px 12px;
+  font-family:var(--sans);font-size:12px;color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.hist-search:focus{border-color:var(--accent)}
+.hist-search::placeholder{color:var(--text3)}
+.hist-item{position:relative;align-items:center}
+.hist-pin{
+  position:absolute;top:50%;right:6px;transform:translateY(-50%);
+  background:transparent;border:none;cursor:pointer;
+  font-size:14px;color:var(--text3);opacity:0;
+  padding:4px;border-radius:6px;transition:opacity .15s,color .15s,background .15s;
+}
+.hist-item:hover .hist-pin{opacity:1}
+.hist-pin:hover{background:var(--s3);color:var(--gold2)}
+.hist-pin.pinned{opacity:1;color:var(--gold2)}
+.hist-item.pinned{background:rgba(245,158,11,.05);border-left:2px solid var(--gold);padding-left:10px}
+
 /* Connection-status indicator (header dot) */
 .conn-status{
   display:inline-flex;align-items:center;justify-content:center;
@@ -502,6 +638,92 @@ html[data-font="large"]  .chat-msg .bubble{font-size:14px}
 .settings-accent.on::after{
   content:'✓';color:#fff;font-size:14px;font-weight:700;
   position:absolute;text-shadow:0 1px 3px rgba(0,0,0,.4);
+}
+
+/* Account section — sign-in card with magic-link form */
+.account-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:12px;
+  padding:14px;margin-bottom:6px;
+}
+.account-state-row{
+  display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;
+}
+.account-icon{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:var(--s3);color:var(--text2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:600;
+}
+.account-icon-on{
+  background:linear-gradient(135deg, rgba(16,185,129,.18), rgba(16,185,129,.08));
+  color:var(--green2);border:1px solid rgba(16,185,129,.3);
+}
+.account-text{flex:1;min-width:0}
+.account-title{
+  font-size:13.5px;font-weight:700;color:var(--text);
+  margin-bottom:2px;word-break:break-all;
+}
+.account-sub{font-size:12px;color:var(--text3);line-height:1.4}
+.signin-form{display:flex;gap:6px;flex-wrap:wrap}
+.signin-email{
+  flex:1;min-width:160px;background:var(--s3);border:1px solid var(--border2);
+  border-radius:10px;padding:9px 14px;
+  font-family:var(--sans);font-size:13px;color:var(--text);outline:none;
+  transition:border-color .15s;
+}
+.signin-email:focus{border-color:var(--accent)}
+.signin-submit{flex-shrink:0;width:auto !important}
+.signin-hint{
+  font-size:11.5px;color:var(--text3);margin-top:8px;line-height:1.5;
+  min-height:16px;
+}
+.signin-hint.ok{color:var(--green2)}
+
+/* Cross-device sync UI */
+.sync-row{display:flex;flex-direction:column;gap:8px}
+.sync-code-display{
+  font-family:var(--mono);text-align:center;
+  padding:10px 0;min-height:18px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.sync-code{
+  font-size:30px;letter-spacing:6px;font-weight:700;
+  color:var(--accent2);
+  background:linear-gradient(135deg, rgba(124,93,249,.12), rgba(34,211,238,.08));
+  border:1px solid var(--border3);border-radius:12px;
+  padding:10px 18px;display:inline-block;
+  user-select:all;-webkit-user-select:all;
+  animation:popIn .35s cubic-bezier(.4,.6,.2,1.2) both;
+}
+.sync-code-hint{font-size:11px;color:var(--text3);font-family:var(--sans)}
+.sync-redeem-row{display:flex;gap:6px;margin-top:10px}
+.sync-code-input{
+  flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:10px;
+  padding:9px 14px;font-family:var(--mono);font-size:16px;letter-spacing:3px;
+  color:var(--text);text-align:center;outline:none;transition:border-color .15s;
+}
+.sync-code-input:focus{border-color:var(--accent)}
+.sync-code-input::placeholder{color:var(--text3);letter-spacing:2px}
+.sync-redeem-btn{flex-shrink:0;width:auto !important}
+
+/* Anonymous device ID display */
+.device-id-row{
+  margin-top:12px;padding:10px 12px;
+  background:var(--s2);border:1px solid var(--border);border-radius:10px;
+}
+.device-id-label{
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;
+}
+.device-id-value{
+  display:block;font-family:var(--mono);font-size:12px;color:var(--text);
+  background:var(--s3);padding:6px 10px;border-radius:6px;
+  user-select:all;-webkit-user-select:all;cursor:default;
+}
+.device-id-actions{display:flex;gap:6px;margin-top:8px}
+.settings-action-btn-mini{
+  width:auto !important;flex:1;font-size:11.5px !important;
+  padding:6px 10px !important;text-align:center !important;
 }
 
 /* Storage breakdown card */
@@ -1656,6 +1878,7 @@ header{
       <button class="nav-btn nav-scan" data-page="scan" onclick="showPage('scan',this)" data-i18n="nav.scan">📷 Scan</button>
       <button class="nav-btn nav-formulas" data-page="formulas" onclick="showPage('formulas',this)" data-i18n="nav.formulas">⚗ Formulas</button>
     </nav>
+    <span class="streak-badge" id="streak-badge" style="display:none" aria-label="Daily streak"></span>
     <span class="conn-status conn-online" id="conn-status" data-i18n-title="conn.online" title="Online" aria-label="Connection status"><span class="conn-dot"></span></span>
     <button class="settings-gear" id="settings-gear" onclick="openSettings()" data-i18n-title="gear.title" data-i18n-aria="gear.title" title="Settings" aria-label="Open settings">⚙</button>
   </header>
@@ -1686,6 +1909,8 @@ header{
             <div class="result-num" id="rnum"></div>
             <div class="result-tag" id="rtag"></div>
           </div>
+          <!-- Context-aware "What's next?" follow-up suggestions, populated by renderWhatsNext() -->
+          <div class="whats-next" id="whats-next" style="display:none"></div>
         </div>
 
         <div class="kbd">
@@ -1738,6 +1963,12 @@ header{
           <!-- Smart suggestions for first-time / empty state — populated by renderCalcSuggestions() -->
           <div class="calc-suggestions" id="calc-suggestions" style="display:none">
             <div class="calc-suggestions-label" data-i18n="calc.suggest.label">Try one of these</div>
+          </div>
+          <!-- Daily math fact — rotates every day; gives first-time and returning users something to read -->
+          <div class="daily-fact" id="daily-fact" style="display:none">
+            <span class="daily-fact-icon">💡</span>
+            <span class="daily-fact-label" data-i18n="daily.label">Did you know</span>
+            <span class="daily-fact-text" id="daily-fact-text"></span>
           </div>
         </div>
 
@@ -1853,8 +2084,13 @@ header{
             <div class="ctitle" data-i18n="calc.hist.title">History</div>
             <div style="display:flex;gap:8px;align-items:center">
               <button class="hist-export-btn" id="hist-export-btn" onclick="exportHistPDF()" style="display:none">↓ Export PDF</button>
-              <span style="font-size:12px;color:var(--text3);cursor:pointer" onclick="clearHist()" data-i18n="settings.btn.clearHist.short" title="">Clear all</span>
+              <span style="font-size:12px;color:var(--text3);cursor:pointer" onclick="clearHist()" title="">Clear all</span>
             </div>
+          </div>
+          <div class="hist-toolbar" id="hist-toolbar" style="display:none">
+            <input type="search" class="hist-search" id="hist-search"
+              data-i18n-placeholder="hist.search" placeholder="Search history…"
+              oninput="renderHist()">
           </div>
           <div class="hist-list" id="hist-list">
             <div class="hist-empty" data-i18n="calc.hist.empty">No history yet</div>
@@ -2583,6 +2819,25 @@ header{
   </div>
 </div>
 
+<!-- Mobile bottom navigation — only visible on small screens; mirrors the top nav for thumb reach -->
+<nav class="mobile-nav" id="mobile-nav" aria-label="Main">
+  <button class="mnav-btn on" data-page="calc"     onclick="showPage('calc',null);syncMobileNav()"     aria-label="Calculator">
+    <span class="mnav-icon">∫</span><span class="mnav-label" data-i18n="nav.calc">Calculator</span>
+  </button>
+  <button class="mnav-btn"    data-page="graph"    onclick="showPage('graph',null);syncMobileNav()"    aria-label="Graphing">
+    <span class="mnav-icon">📈</span><span class="mnav-label" data-i18n="nav.graph">Graph</span>
+  </button>
+  <button class="mnav-btn"    data-page="solver"   onclick="showPage('solver',null);syncMobileNav()"   aria-label="Solver">
+    <span class="mnav-icon">⊢</span><span class="mnav-label" data-i18n="nav.solver">Solver</span>
+  </button>
+  <button class="mnav-btn"    data-page="scan"     onclick="showPage('scan',null);syncMobileNav()"     aria-label="Scan">
+    <span class="mnav-icon">📷</span><span class="mnav-label" data-i18n="nav.scan">Scan</span>
+  </button>
+  <button class="mnav-btn"    data-page="formulas" onclick="showPage('formulas',null);syncMobileNav()" aria-label="Formulas">
+    <span class="mnav-icon">⚗</span><span class="mnav-label" data-i18n="nav.formulas">Formulas</span>
+  </button>
+</nav>
+
 <!-- First-run onboarding -->
 <div class="onboard-overlay" id="onboard-overlay" role="dialog" aria-modal="true" aria-labelledby="onboard-title">
   <div class="onboard-card">
@@ -2798,6 +3053,77 @@ header{
         <button class="settings-action-btn" onclick="document.getElementById('settings-import-input').click()" data-i18n="settings.btn.import">⬆ Import from JSON…</button>
       </div>
 
+      <div class="settings-section" id="settings-account-section">
+        <div class="settings-section-title" data-i18n="settings.section.account">Account</div>
+        <div class="settings-section-desc"  data-i18n="settings.section.account.desc">Sign in to back up your data and sync across devices. Your math expressions are private — only your settings, history, and stats sync.</div>
+
+        <!-- Signed-out / anonymous state -->
+        <div class="account-card" id="account-signed-out">
+          <div class="account-state-row">
+            <span class="account-icon">👤</span>
+            <div class="account-text">
+              <div class="account-title" data-i18n="account.anonStatus">Anonymous · using this device only</div>
+              <div class="account-sub"   data-i18n="account.anonSub">Sign in to keep everything safe and continue on your phone, laptop, or tablet.</div>
+            </div>
+          </div>
+          <form id="signin-form" class="signin-form" onsubmit="event.preventDefault(); settingsSignIn();">
+            <input type="email" id="signin-email" class="signin-email" required autocomplete="email"
+              data-i18n-placeholder="account.emailPlaceholder" placeholder="you@example.com">
+            <button class="settings-action-btn signin-submit" type="submit" id="signin-submit-btn" data-i18n="account.sendLink">Send magic link</button>
+          </form>
+          <div class="signin-hint" id="signin-hint"></div>
+        </div>
+
+        <!-- Signed-in state -->
+        <div class="account-card" id="account-signed-in" style="display:none">
+          <div class="account-state-row">
+            <span class="account-icon account-icon-on">✓</span>
+            <div class="account-text">
+              <div class="account-title" id="account-email">—</div>
+              <div class="account-sub" data-i18n="account.syncOn">Synced across all your devices</div>
+            </div>
+          </div>
+          <button class="settings-action-btn" onclick="settingsSignOut()" data-i18n="account.signOut">Sign out</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title" data-i18n="settings.section.sync">Sync across devices</div>
+        <div class="settings-section-desc"  data-i18n="settings.section.sync.desc">Move your settings, history, and practice stats to another device using a one-time 6-digit code. No account needed. Code expires in 10 minutes.</div>
+        <div class="sync-row">
+          <button class="settings-action-btn" id="btn-generate-sync" onclick="settingsGenerateSyncCode()" data-i18n="sync.generate">Generate sync code</button>
+          <div class="sync-code-display" id="sync-code-display" aria-live="polite"></div>
+        </div>
+        <div class="sync-redeem-row">
+          <input type="text" inputmode="numeric" pattern="\d*" maxlength="6" class="sync-code-input" id="sync-code-input"
+            data-i18n-placeholder="sync.enterCode" placeholder="123456" autocomplete="off">
+          <button class="settings-action-btn sync-redeem-btn" onclick="settingsRedeemSyncCode()" data-i18n="sync.redeem">Apply code</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title" data-i18n="settings.section.privacy">Privacy</div>
+        <div class="settings-section-desc"  data-i18n="settings.section.privacy.desc">Mathix collects anonymous usage data — page views, feature counts, error rates — to improve the app. Never your math expressions, never personal info.</div>
+        <label class="settings-toggle-row" for="toggle-share-usage">
+          <div>
+            <div class="settings-toggle-label" data-i18n="settings.toggle.shareUsage">Share anonymous usage data</div>
+            <div class="settings-toggle-hint"  data-i18n="settings.toggle.shareUsage.hint">Helps us understand which features matter and where the app breaks.</div>
+          </div>
+          <span class="settings-toggle">
+            <input type="checkbox" id="toggle-share-usage" onchange="setShareUsageData(this.checked)">
+            <span class="slider"></span>
+          </span>
+        </label>
+        <div class="device-id-row">
+          <div class="device-id-label" data-i18n="privacy.deviceId">Your anonymous device ID</div>
+          <code class="device-id-value" id="device-id-value">—</code>
+          <div class="device-id-actions">
+            <button class="settings-action-btn settings-action-btn-mini" onclick="settingsCopyDeviceId()" data-i18n="privacy.copy">Copy</button>
+            <button class="settings-action-btn settings-action-btn-mini danger" onclick="settingsRotateDeviceId()" data-i18n="privacy.rotate">Rotate</button>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-section">
         <div class="settings-section-title" data-i18n="settings.section.clearData">Clear data</div>
         <button class="settings-action-btn danger" onclick="settingsClearHistory()" data-i18n="settings.btn.clearHist">🗑 Clear calculation history</button>
@@ -2863,6 +3189,52 @@ header{
 // Until then, it calls Groq directly as fallback.
 const WORKER_URL = 'https://mathixai.salmane0313.workers.dev/api/ai';
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUPABASE — fill these in to enable the real backend.
+   • Run supabase_schema.sql in your Supabase SQL editor first.
+   • Project Settings → API → Project URL + anon public key.
+   • Until both are filled, the app runs in pure-localStorage mode (no auth,
+     no cloud sync) — exactly as before. Zero behavior change.
+═══════════════════════════════════════════════════════════════════════════ */
+const SUPABASE_URL      = 'https://ysuocpotrvdyjxqebxzb.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_WKVPhjwVQFmgRGU4NFU8Bg_wS-CV5Gp';
+
+const SUPABASE_ENABLED = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+// Lazy-loaded Supabase client — fetches the SDK only when actually configured.
+let _sbClientPromise = null;
+function getSupabase() {
+  if (!SUPABASE_ENABLED) return Promise.resolve(null);
+  if (_sbClientPromise) return _sbClientPromise;
+  _sbClientPromise = new Promise((resolve) => {
+    const init = () => {
+      try {
+        const lib = window.supabase;
+        if (!lib || typeof lib.createClient !== 'function') return resolve(null);
+        const client = lib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+          auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true, // catches magic-link redirects
+            storageKey: 'mathix_sb_auth',
+          },
+        });
+        resolve(client);
+      } catch (e) { resolve(null); }
+    };
+    const existing = document.querySelector('script[data-mx-supabase]');
+    if (existing) { existing.addEventListener('load', init, { once: true }); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    s.async = true;
+    s.dataset.mxSupabase = '1';
+    s.onload = init;
+    s.onerror = () => resolve(null);
+    document.head.appendChild(s);
+  });
+  return _sbClientPromise;
+}
+
 // ── Turnstile removed — Worker handles rate limiting via circuit breaker ──
 async function getTurnstileToken() { return ''; }
 
@@ -2919,7 +3291,10 @@ async function callAI(messages, maxTokens = 1000, system = '', opts = {}) {
   // Network errors get one retry too. AbortError is never retried.
   const doFetch = () => fetch(WORKER_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Device-Id': (typeof DEVICE_ID === 'string' ? DEVICE_ID : ''),
+    },
     body: JSON.stringify({ messages, max_tokens: maxTokens, system: finalSystem, turnstileToken: '' }),
     signal: ctrl.signal,
   });
@@ -3069,6 +3444,57 @@ const I18N = {
     'onboard.f.formulas':'80+ physics, chemistry & math references.',
     'onboard.btn.start':"Let's go →",
     'calc.suggest.label':'Try one of these',
+    'whatsnext.label':"What's next?",
+    'whatsnext.graph':'Graph this','whatsnext.solve':'Solve','whatsnext.factor':'Factor','whatsnext.diff':'Differentiate','whatsnext.integ':'Integrate','whatsnext.similar':'Practice similar',
+    'whatsnext.practice.hint':'Pick a topic to drill problems like this one',
+    'egg.42':"42 — the answer to life, the universe, and everything 🌌",
+    'egg.euler':"Euler's identity — the most beautiful equation in math ✨",
+    'egg.pi':'Happy π day! 🥧','egg.infinity':"You've reached infinity… and beyond 🚀",'egg.imaginary':'Welcome to the imaginary realm 🌀','egg.phi':"The golden ratio — nature's favorite number 🌻",'egg.googol':"That's a googol — a 1 followed by 100 zeros",'egg.zerozero':'Mathematicians still argue about this one 🤔','egg.zerofact':"0! = 1, by convention. Math is weird sometimes ✨",
+    'streak.milestone':'{n}-day streak! Keep it going.',
+    'streak.tooltip':'{n}-day streak (best: {best})',
+    'greet.morning':'Good morning!','greet.afternoon':'Good afternoon!','greet.evening':'Good evening!','greet.late':'Working late?',
+    'hist.search':'Search history…','hist.noMatch':'No matching calculations','hist.pin':'Pin to top','hist.unpin':'Unpin',
+    'toast.enterExprFirst':'Enter an expression first',
+    'daily.label':'Did you know',
+    'time.justNow':'just now',
+    'whatsnext.steps':'Show steps',
+    'toast.exprIncomplete':'That expression looks unfinished — try completing it',
+    'toast.copyFail':'Could not copy — try again',
+    'settings.section.sync':'Sync across devices',
+    'settings.section.sync.desc':'Move your settings, history, and practice stats to another device using a one-time 6-digit code. No account needed. The code expires in 10 minutes.',
+    'sync.generate':'Generate sync code',
+    'sync.codeExpires':'Expires in 10 minutes — enter it on your other device',
+    'sync.enterCode':'123456',
+    'sync.redeem':'Apply code',
+    'sync.invalidCode':'Enter a 6-digit code',
+    'sync.codeExpired':'That code has expired or already been used',
+    'sync.imported':"✓ Synced! Your data is now on this device",
+    'sync.error':'Sync failed — check your connection',
+    'confirm.sync.import':'Replace this device\'s data with the synced data?\n\nYour current settings, history, and practice stats will be overwritten.',
+    'settings.section.privacy':'Privacy',
+    'settings.section.privacy.desc':'Mathix collects anonymous usage data — page views, feature counts, error rates — to improve the app. Never your math expressions, never personal info.',
+    'settings.toggle.shareUsage':'Share anonymous usage data',
+    'settings.toggle.shareUsage.hint':'Helps us understand which features matter and where the app breaks.',
+    'privacy.deviceId':'Your anonymous device ID',
+    'privacy.copy':'Copy',
+    'privacy.rotate':'Rotate',
+    'privacy.deviceIdRotated':'Device ID rotated. Reloading…',
+    'confirm.rotateDeviceId':'Rotate your device ID?\n\nThis disconnects this device from any usage history we have. The page will reload.',
+    'settings.section.account':'Account',
+    'settings.section.account.desc':'Sign in to back up your data and sync across devices. Your math expressions stay private — only your settings, history, and stats sync.',
+    'account.anonStatus':'Anonymous · using this device only',
+    'account.anonSub':'Sign in to keep everything safe and continue on your phone, laptop, or tablet.',
+    'account.emailPlaceholder':'you@example.com',
+    'account.sendLink':'Send magic link',
+    'account.magicSent':'✓ Check your inbox — we sent a sign-in link',
+    'account.linkSent':'✓ Confirmation email sent — click the link to finish linking this device',
+    'account.invalidEmail':'That doesn\'t look like a valid email',
+    'account.signInError':'Could not send the link. Try again in a moment.',
+    'account.syncOn':'Synced across all your devices',
+    'account.signOut':'Sign out',
+    'account.signedOut':'Signed out',
+    'confirm.signOut':'Sign out of Mathix?\n\nYour local data on this device stays. To use it on another device again, sign back in.',
+    'daily.fact.0':"There are infinitely many primes — Euclid proved it over 2,000 years ago.",'daily.fact.1':"0.999… (repeating) equals exactly 1. They are the same number.",'daily.fact.2':"Pi appears in places it has no business being — even in the lengths of meandering rivers.",'daily.fact.3':"Any map can be coloured with at most 4 colours so no two neighbours share a colour.",'daily.fact.4':"There are more arrangements of a deck of 52 cards than atoms on Earth.",'daily.fact.5':"Euler's identity, e^(iπ) + 1 = 0, links five fundamental constants in one formula.",'daily.fact.6':"Zero is the only number that has no positive representation in Roman numerals.",'daily.fact.7':"The Fibonacci sequence shows up in sunflowers, pinecones, and galaxies.",'daily.fact.8':"Cantor proved some infinities are bigger than others — using a diagonal argument.",'daily.fact.9':"A 'googolplex' is a 1 followed by a googol of zeros — too big to write in this universe.",'daily.fact.10':"The probability of two people in a room of 23 sharing a birthday is over 50%.",'daily.fact.11':"1 + 2 + 3 + … forever, in a controlled sense, equals −1/12. Physicists love this.",'daily.fact.12':"Negative numbers were once considered 'absurd' by European mathematicians.",'daily.fact.13':"A Möbius strip has only one side. Try cutting one in half — the result will surprise you.",'daily.fact.14':"Knot theory, born from pure curiosity, now helps biologists understand DNA.",'daily.fact.15':"There's no closed-form formula for the perimeter of an ellipse — only series approximations.",'daily.fact.16':"Gauss summed 1+2+…+100 in seconds as a child by pairing terms: 50 pairs of 101.",'daily.fact.17':"The Mandelbrot set's boundary is infinitely detailed — and has Hausdorff dimension 2.",'daily.fact.18':"Square roots of perfect squares aside, no nested radical of integers gives an integer.",'daily.fact.19':"Ramanujan once saw 1729 as 'just a number' — until he realised it was the smallest sum of two cubes in two ways.",'daily.fact.20':"An 8×8 chessboard with two opposite corners removed cannot be tiled with dominoes.",'daily.fact.21':"There are exactly 17 distinct wallpaper symmetry groups — proved by Pólya in 1924.",'daily.fact.22':"The harmonic series 1 + 1/2 + 1/3 + … diverges, just very, very slowly.",'daily.fact.23':"Every even integer greater than 2 is conjectured to be the sum of two primes (Goldbach, still unproven).",
     'settings.section.angle':'Angle unit','settings.section.angle.desc':'How sin, cos, tan and their inverses interpret their input.',
     'settings.angle.rad':'Radians','settings.angle.deg':'Degrees',
     'settings.section.decimals':'Decimal precision','settings.section.decimals.desc':'Maximum digits shown after the decimal point. In Auto mode trailing zeros are dropped.',
@@ -3232,6 +3658,57 @@ const I18N = {
     'onboard.f.formulas':'Más de 80 fórmulas de física, química y mates.',
     'onboard.btn.start':'¡Empecemos! →',
     'calc.suggest.label':'Prueba alguno de estos',
+    'whatsnext.label':'¿Qué sigue?',
+    'whatsnext.graph':'Graficar','whatsnext.solve':'Resolver','whatsnext.factor':'Factorizar','whatsnext.diff':'Derivar','whatsnext.integ':'Integrar','whatsnext.similar':'Practicar parecido',
+    'whatsnext.practice.hint':'Elige un tema para practicar problemas como este',
+    'egg.42':'42 — la respuesta a la vida, el universo y todo lo demás 🌌',
+    'egg.euler':'Identidad de Euler — la ecuación más bella de las matemáticas ✨',
+    'egg.pi':'¡Feliz día de π! 🥧','egg.infinity':'Has llegado al infinito… y más allá 🚀','egg.imaginary':'Bienvenido al reino imaginario 🌀','egg.phi':'La proporción áurea — el número favorito de la naturaleza 🌻','egg.googol':'Eso es un googol — un 1 seguido de 100 ceros','egg.zerozero':'Los matemáticos aún discuten esto 🤔','egg.zerofact':'0! = 1, por convención. ✨',
+    'streak.milestone':'¡{n} días seguidos! Sigue así.',
+    'streak.tooltip':'Racha de {n} días (mejor: {best})',
+    'greet.morning':'¡Buenos días!','greet.afternoon':'¡Buenas tardes!','greet.evening':'¡Buenas noches!','greet.late':'¿Trabajando tarde?',
+    'hist.search':'Buscar en el historial…','hist.noMatch':'No hay cálculos coincidentes','hist.pin':'Fijar arriba','hist.unpin':'Quitar fijo',
+    'toast.enterExprFirst':'Escribe primero una expresión',
+    'daily.label':'¿Sabías que',
+    'time.justNow':'ahora mismo',
+    'whatsnext.steps':'Ver pasos',
+    'toast.exprIncomplete':'La expresión parece incompleta — intenta terminarla',
+    'toast.copyFail':'No se pudo copiar — inténtalo de nuevo',
+    'settings.section.sync':'Sincronizar entre dispositivos',
+    'settings.section.sync.desc':'Mueve tus ajustes, historial y estadísticas a otro dispositivo con un código de 6 dígitos de un solo uso. Sin cuenta. El código expira en 10 minutos.',
+    'sync.generate':'Generar código',
+    'sync.codeExpires':'Expira en 10 minutos — introdúcelo en tu otro dispositivo',
+    'sync.enterCode':'123456',
+    'sync.redeem':'Aplicar código',
+    'sync.invalidCode':'Introduce un código de 6 dígitos',
+    'sync.codeExpired':'Ese código ha expirado o ya se ha usado',
+    'sync.imported':'✓ ¡Sincronizado! Tus datos están ahora en este dispositivo',
+    'sync.error':'Falló la sincronización — comprueba tu conexión',
+    'confirm.sync.import':'¿Reemplazar los datos de este dispositivo con los datos sincronizados?\n\nTus ajustes, historial y estadísticas actuales se sobrescribirán.',
+    'settings.section.privacy':'Privacidad',
+    'settings.section.privacy.desc':'Mathix recopila datos de uso anónimos — visitas, conteos de funciones, tasas de error — para mejorar la app. Nunca tus expresiones, nunca info personal.',
+    'settings.toggle.shareUsage':'Compartir datos de uso anónimos',
+    'settings.toggle.shareUsage.hint':'Nos ayuda a entender qué funciones importan y dónde falla la app.',
+    'privacy.deviceId':'Tu ID anónimo de dispositivo',
+    'privacy.copy':'Copiar',
+    'privacy.rotate':'Rotar',
+    'privacy.deviceIdRotated':'ID rotado. Recargando…',
+    'confirm.rotateDeviceId':'¿Rotar tu ID de dispositivo?\n\nEsto desconecta este dispositivo de cualquier historial de uso. La página se recargará.',
+    'settings.section.account':'Cuenta',
+    'settings.section.account.desc':'Inicia sesión para hacer copia de seguridad y sincronizar entre dispositivos. Tus expresiones siguen siendo privadas — solo se sincronizan ajustes, historial y estadísticas.',
+    'account.anonStatus':'Anónimo · solo en este dispositivo',
+    'account.anonSub':'Inicia sesión para mantener todo a salvo y continuar en tu móvil, portátil o tablet.',
+    'account.emailPlaceholder':'tu@email.com',
+    'account.sendLink':'Enviar enlace mágico',
+    'account.magicSent':'✓ Revisa tu correo — te enviamos un enlace para iniciar sesión',
+    'account.linkSent':'✓ Correo de confirmación enviado — pulsa el enlace para vincular este dispositivo',
+    'account.invalidEmail':'No parece un email válido',
+    'account.signInError':'No se pudo enviar el enlace. Inténtalo en un momento.',
+    'account.syncOn':'Sincronizado en todos tus dispositivos',
+    'account.signOut':'Cerrar sesión',
+    'account.signedOut':'Sesión cerrada',
+    'confirm.signOut':'¿Cerrar sesión en Mathix?\n\nTus datos locales en este dispositivo permanecen. Para volver a usarlos en otro dispositivo, inicia sesión de nuevo.',
+    'daily.fact.0':"Hay infinitos números primos — Euclides lo demostró hace más de 2000 años.",'daily.fact.1':"0,999… (periódico) es exactamente 1. Son el mismo número.",'daily.fact.2':"π aparece en lugares inesperados — incluso en la longitud de los ríos sinuosos.",'daily.fact.3':"Cualquier mapa puede colorearse con 4 colores sin que dos vecinos compartan color.",'daily.fact.4':"Hay más ordenaciones de una baraja de 52 cartas que átomos en la Tierra.",'daily.fact.5':"La identidad de Euler, e^(iπ) + 1 = 0, conecta cinco constantes fundamentales.",'daily.fact.6':"El cero es el único número sin representación positiva en numeración romana.",'daily.fact.7':"La sucesión de Fibonacci aparece en girasoles, piñas y galaxias.",'daily.fact.8':"Cantor demostró que algunos infinitos son mayores que otros.",'daily.fact.9':"Un 'googolplex' es un 1 seguido de un googol de ceros — demasiado grande para escribirse.",'daily.fact.10':"En un grupo de 23 personas la probabilidad de que dos compartan cumpleaños supera el 50%.",'daily.fact.11':"1 + 2 + 3 + … sumado de cierta forma da −1/12. A los físicos les encanta.",'daily.fact.12':"Los números negativos fueron considerados 'absurdos' por matemáticos europeos.",'daily.fact.13':"Una banda de Möbius tiene una sola cara. Intenta cortarla por la mitad.",'daily.fact.14':"La teoría de nudos ayuda hoy a los biólogos a entender el ADN.",'daily.fact.15':"No existe fórmula cerrada para el perímetro de una elipse.",'daily.fact.16':"Gauss niño sumó 1+2+…+100 en segundos: 50 pares de 101.",'daily.fact.17':"La frontera del conjunto de Mandelbrot tiene dimensión de Hausdorff 2.",'daily.fact.18':"Ningún radical anidado de enteros da un entero (salvo casos triviales).",'daily.fact.19':"Ramanujan vio 1729 como 'corriente' — hasta darse cuenta de que es la menor suma de dos cubos de dos formas.",'daily.fact.20':"Un tablero 8×8 sin dos esquinas opuestas no puede cubrirse con dominós.",'daily.fact.21':"Existen exactamente 17 grupos de simetría de papel tapiz.",'daily.fact.22':"La serie armónica 1 + 1/2 + 1/3 + … diverge, muy lentamente.",'daily.fact.23':"Todo entero par > 2 sería suma de dos primos (Goldbach, sin demostrar).",
     'settings.section.angle':'Unidad de ángulo','settings.section.angle.desc':'Cómo sin, cos, tan y sus inversas interpretan la entrada.',
     'settings.angle.rad':'Radianes','settings.angle.deg':'Grados',
     'settings.section.decimals':'Precisión decimal','settings.section.decimals.desc':'Dígitos máximos después del punto decimal. En modo Auto, los ceros finales se omiten.',
@@ -3369,6 +3846,57 @@ const I18N = {
     'onboard.f.formulas':'80+ formules de physique, chimie et maths.',
     'onboard.btn.start':"C'est parti →",
     'calc.suggest.label':'Essayez un exemple',
+    'whatsnext.label':'Ensuite ?',
+    'whatsnext.graph':'Tracer','whatsnext.solve':'Résoudre','whatsnext.factor':'Factoriser','whatsnext.diff':'Dériver','whatsnext.integ':'Intégrer','whatsnext.similar':'Exercice similaire',
+    'whatsnext.practice.hint':'Choisissez un thème pour des exercices similaires',
+    'egg.42':"42 — la réponse à la vie, l'univers et le reste 🌌",
+    'egg.euler':"Identité d'Euler — la plus belle équation des maths ✨",
+    'egg.pi':'Bonne journée du π ! 🥧','egg.infinity':"Vous avez atteint l'infini… et au-delà 🚀",'egg.imaginary':'Bienvenue dans le royaume imaginaire 🌀','egg.phi':"Le nombre d'or — le préféré de la nature 🌻",'egg.googol':'Un googol — un 1 suivi de 100 zéros','egg.zerozero':'Les mathématiciens en débattent encore 🤔','egg.zerofact':'0! = 1, par convention ✨',
+    'streak.milestone':"{n} jours d'affilée ! Continuez.",
+    'streak.tooltip':'Série de {n} jours (record : {best})',
+    'greet.morning':'Bonjour !','greet.afternoon':'Bon après-midi !','greet.evening':'Bonsoir !','greet.late':'Vous travaillez tard ?',
+    'hist.search':"Rechercher dans l'historique…",'hist.noMatch':'Aucun calcul correspondant','hist.pin':'Épingler en haut','hist.unpin':'Détacher',
+    'toast.enterExprFirst':"Tapez d'abord une expression",
+    'daily.label':'Le saviez-vous',
+    'time.justNow':"à l'instant",
+    'whatsnext.steps':'Voir les étapes',
+    'toast.exprIncomplete':"L'expression semble incomplète — essayez de la terminer",
+    'toast.copyFail':'Impossible de copier — réessayez',
+    'settings.section.sync':'Synchroniser entre appareils',
+    'settings.section.sync.desc':'Transférez vos paramètres, historique et statistiques sur un autre appareil avec un code à 6 chiffres à usage unique. Sans compte. Le code expire en 10 minutes.',
+    'sync.generate':'Générer un code',
+    'sync.codeExpires':"Expire dans 10 minutes — saisissez-le sur l'autre appareil",
+    'sync.enterCode':'123456',
+    'sync.redeem':'Appliquer le code',
+    'sync.invalidCode':'Saisissez un code à 6 chiffres',
+    'sync.codeExpired':'Ce code a expiré ou a déjà été utilisé',
+    'sync.imported':'✓ Synchronisé ! Vos données sont sur cet appareil',
+    'sync.error':'Échec de la synchronisation — vérifiez votre connexion',
+    'confirm.sync.import':"Remplacer les données de cet appareil par celles synchronisées ?\n\nVos paramètres, historique et statistiques actuels seront écrasés.",
+    'settings.section.privacy':'Confidentialité',
+    'settings.section.privacy.desc':"Mathix collecte des données d'utilisation anonymes — visites, compteurs de fonctionnalités, taux d'erreur — pour améliorer l'app. Jamais vos expressions, jamais d'infos personnelles.",
+    'settings.toggle.shareUsage':"Partager des données d'utilisation anonymes",
+    'settings.toggle.shareUsage.hint':"Nous aide à comprendre ce qui compte et où l'app rencontre des bugs.",
+    'privacy.deviceId':"Votre identifiant d'appareil anonyme",
+    'privacy.copy':'Copier',
+    'privacy.rotate':'Renouveler',
+    'privacy.deviceIdRotated':'Identifiant renouvelé. Rechargement…',
+    'confirm.rotateDeviceId':"Renouveler l'identifiant de votre appareil ?\n\nCela déconnecte cet appareil de tout historique d'usage. La page se rechargera.",
+    'settings.section.account':'Compte',
+    'settings.section.account.desc':"Connectez-vous pour sauvegarder vos données et synchroniser entre appareils. Vos expressions restent privées — seuls vos paramètres, historique et statistiques se synchronisent.",
+    'account.anonStatus':'Anonyme · sur cet appareil uniquement',
+    'account.anonSub':"Connectez-vous pour tout garder en sécurité et continuer sur votre téléphone, ordinateur ou tablette.",
+    'account.emailPlaceholder':'vous@exemple.com',
+    'account.sendLink':'Envoyer le lien magique',
+    'account.magicSent':'✓ Consultez votre boîte mail — nous avons envoyé un lien de connexion',
+    'account.linkSent':'✓ E-mail de confirmation envoyé — cliquez pour lier cet appareil',
+    'account.invalidEmail':'Cet email ne semble pas valide',
+    'account.signInError':'Impossible d\'envoyer le lien. Réessayez dans un instant.',
+    'account.syncOn':'Synchronisé sur tous vos appareils',
+    'account.signOut':'Se déconnecter',
+    'account.signedOut':'Déconnecté',
+    'confirm.signOut':"Se déconnecter de Mathix ?\n\nVos données locales sur cet appareil restent. Pour les retrouver ailleurs, reconnectez-vous.",
+    'daily.fact.0':"Il existe une infinité de nombres premiers — démontré par Euclide il y a 2000 ans.",'daily.fact.1':"0,999… (périodique) est exactement égal à 1. C'est le même nombre.",'daily.fact.2':"π apparaît dans des endroits inattendus — même dans la longueur des fleuves sinueux.",'daily.fact.3':"Toute carte peut être coloriée avec au plus 4 couleurs sans que deux voisins partagent la même.",'daily.fact.4':"Il y a plus d'ordres possibles d'un jeu de 52 cartes que d'atomes sur Terre.",'daily.fact.5':"L'identité d'Euler, e^(iπ) + 1 = 0, relie cinq constantes fondamentales en une formule.",'daily.fact.6':"Zéro est le seul nombre qui n'a pas de représentation positive en chiffres romains.",'daily.fact.7':"La suite de Fibonacci apparaît dans les tournesols, les pommes de pin et les galaxies.",'daily.fact.8':"Cantor a prouvé que certaines infinités sont plus grandes que d'autres.",'daily.fact.9':"Un 'googolplex' est un 1 suivi d'un googol de zéros — trop grand pour être écrit dans cet univers.",'daily.fact.10':"Dans un groupe de 23 personnes, la probabilité que deux partagent un anniversaire dépasse 50%.",'daily.fact.11':"1 + 2 + 3 + … (sommé d'une certaine façon) vaut −1/12. Les physiciens adorent ça.",'daily.fact.12':"Les nombres négatifs étaient jadis considérés comme 'absurdes' en Europe.",'daily.fact.13':"Un ruban de Möbius n'a qu'une seule face. Essayez de le couper en deux pour voir.",'daily.fact.14':"La théorie des nœuds, née d'une pure curiosité, aide aujourd'hui à comprendre l'ADN.",'daily.fact.15':"Il n'existe pas de formule fermée pour le périmètre d'une ellipse.",'daily.fact.16':"Gauss enfant a sommé 1+2+…+100 en quelques secondes : 50 paires de 101.",'daily.fact.17':"La frontière de l'ensemble de Mandelbrot a une dimension de Hausdorff de 2.",'daily.fact.18':"Aucun radical imbriqué d'entiers ne donne un entier (à part les cas triviaux).",'daily.fact.19':"Ramanujan vit 1729 comme 'banal' — avant de réaliser qu'il s'agissait du plus petit nombre somme de deux cubes de deux façons.",'daily.fact.20':"Un échiquier 8×8 privé de deux coins opposés ne peut pas être pavé par des dominos.",'daily.fact.21':"Il existe exactement 17 groupes de symétrie de papier peint distincts.",'daily.fact.22':"La série harmonique 1 + 1/2 + 1/3 + … diverge, très lentement.",'daily.fact.23':"Tout entier pair > 2 serait somme de deux nombres premiers (Goldbach, non prouvé).",
     'settings.section.angle':'Unité d\'angle','settings.section.angle.desc':'Comment sin, cos, tan et leurs inverses interprètent l\'entrée.',
     'settings.angle.rad':'Radians','settings.angle.deg':'Degrés',
     'settings.section.decimals':'Précision décimale','settings.section.decimals.desc':'Nombre maximum de chiffres après la virgule. En mode Auto, les zéros finaux sont supprimés.',
@@ -3505,6 +4033,57 @@ const I18N = {
     'onboard.f.formulas':'80+ Formeln aus Physik, Chemie und Mathe.',
     'onboard.btn.start':'Los gehts →',
     'calc.suggest.label':'Probiere eines davon',
+    'whatsnext.label':'Wie weiter?',
+    'whatsnext.graph':'Graph zeichnen','whatsnext.solve':'Lösen','whatsnext.factor':'Faktorisieren','whatsnext.diff':'Ableiten','whatsnext.integ':'Integrieren','whatsnext.similar':'Ähnliches üben',
+    'whatsnext.practice.hint':'Wähle ein Thema für ähnliche Aufgaben',
+    'egg.42':'42 — die Antwort auf das Leben, das Universum und den ganzen Rest 🌌',
+    'egg.euler':'Eulers Identität — die schönste Gleichung der Mathematik ✨',
+    'egg.pi':'Schöner Pi-Tag! 🥧','egg.infinity':'Bis zur Unendlichkeit… und darüber hinaus 🚀','egg.imaginary':'Willkommen im imaginären Reich 🌀','egg.phi':'Der goldene Schnitt — die Lieblingszahl der Natur 🌻','egg.googol':'Ein Googol — eine 1 mit 100 Nullen','egg.zerozero':'Mathematiker streiten sich noch darüber 🤔','egg.zerofact':'0! = 1, per Konvention ✨',
+    'streak.milestone':'{n}-Tage-Serie! Weiter so.',
+    'streak.tooltip':'{n}-Tage-Serie (Bestwert: {best})',
+    'greet.morning':'Guten Morgen!','greet.afternoon':'Guten Tag!','greet.evening':'Guten Abend!','greet.late':'Spät dran?',
+    'hist.search':'Verlauf durchsuchen…','hist.noMatch':'Keine passenden Berechnungen','hist.pin':'Oben anheften','hist.unpin':'Lösen',
+    'toast.enterExprFirst':'Erst einen Ausdruck eingeben',
+    'daily.label':'Wusstest du',
+    'time.justNow':'gerade eben',
+    'whatsnext.steps':'Schritte zeigen',
+    'toast.exprIncomplete':'Der Ausdruck wirkt unvollständig — versuche, ihn zu vervollständigen',
+    'toast.copyFail':'Kopieren fehlgeschlagen — erneut versuchen',
+    'settings.section.sync':'Geräteübergreifende Sync',
+    'settings.section.sync.desc':'Übertrage Einstellungen, Verlauf und Statistik auf ein anderes Gerät mit einem einmaligen 6-stelligen Code. Kein Konto nötig. Code läuft in 10 Minuten ab.',
+    'sync.generate':'Sync-Code erzeugen',
+    'sync.codeExpires':'Läuft in 10 Minuten ab — gib ihn auf dem anderen Gerät ein',
+    'sync.enterCode':'123456',
+    'sync.redeem':'Code anwenden',
+    'sync.invalidCode':'Gib einen 6-stelligen Code ein',
+    'sync.codeExpired':'Dieser Code ist abgelaufen oder wurde bereits benutzt',
+    'sync.imported':'✓ Synchronisiert! Deine Daten sind jetzt auf diesem Gerät',
+    'sync.error':'Sync fehlgeschlagen — Verbindung prüfen',
+    'confirm.sync.import':'Daten auf diesem Gerät durch die synchronisierten ersetzen?\n\nAktuelle Einstellungen, Verlauf und Statistik werden überschrieben.',
+    'settings.section.privacy':'Datenschutz',
+    'settings.section.privacy.desc':'Mathix sammelt anonyme Nutzungsdaten — Seitenaufrufe, Feature-Zähler, Fehlerraten — um die App zu verbessern. Niemals deine Ausdrücke, niemals persönliche Daten.',
+    'settings.toggle.shareUsage':'Anonyme Nutzungsdaten teilen',
+    'settings.toggle.shareUsage.hint':'Hilft zu verstehen, welche Funktionen wichtig sind und wo die App Fehler hat.',
+    'privacy.deviceId':'Deine anonyme Geräte-ID',
+    'privacy.copy':'Kopieren',
+    'privacy.rotate':'Erneuern',
+    'privacy.deviceIdRotated':'Geräte-ID erneuert. Lade neu…',
+    'confirm.rotateDeviceId':'Deine Geräte-ID erneuern?\n\nDieses Gerät wird von allen vorherigen Nutzungsdaten getrennt. Die Seite wird neu geladen.',
+    'settings.section.account':'Konto',
+    'settings.section.account.desc':'Melde dich an, um deine Daten zu sichern und geräteübergreifend zu synchronisieren. Deine Ausdrücke bleiben privat — nur Einstellungen, Verlauf und Statistik werden synchronisiert.',
+    'account.anonStatus':'Anonym · nur auf diesem Gerät',
+    'account.anonSub':'Melde dich an, um alles sicher zu halten und auf Handy, Laptop oder Tablet weiterzumachen.',
+    'account.emailPlaceholder':'du@beispiel.de',
+    'account.sendLink':'Magic Link senden',
+    'account.magicSent':'✓ Prüfe dein Postfach — wir haben einen Anmelde-Link gesendet',
+    'account.linkSent':'✓ Bestätigungs-Mail gesendet — klicke den Link, um dieses Gerät zu verbinden',
+    'account.invalidEmail':'Das sieht nicht nach einer gültigen E-Mail aus',
+    'account.signInError':'Konnte den Link nicht senden. Gleich erneut versuchen.',
+    'account.syncOn':'Auf allen Geräten synchronisiert',
+    'account.signOut':'Abmelden',
+    'account.signedOut':'Abgemeldet',
+    'confirm.signOut':'Bei Mathix abmelden?\n\nDeine lokalen Daten auf diesem Gerät bleiben. Um sie woanders wieder zu nutzen, melde dich erneut an.',
+    'daily.fact.0':"Es gibt unendlich viele Primzahlen — Euklid bewies das vor über 2000 Jahren.",'daily.fact.1':"0,999… (periodisch) ist exakt 1. Es ist dieselbe Zahl.",'daily.fact.2':"π taucht an unerwarteten Stellen auf — sogar in der Länge mäandernder Flüsse.",'daily.fact.3':"Jede Karte kann mit 4 Farben so gefärbt werden, dass keine Nachbarn gleichfarbig sind.",'daily.fact.4':"Es gibt mehr Anordnungen eines 52er-Kartenstapels als Atome auf der Erde.",'daily.fact.5':"Eulers Identität, e^(iπ) + 1 = 0, verbindet fünf Grundkonstanten in einer Formel.",'daily.fact.6':"Die Null hat keine positive Darstellung in römischen Zahlen.",'daily.fact.7':"Fibonacci-Zahlen erscheinen in Sonnenblumen, Tannenzapfen und Galaxien.",'daily.fact.8':"Cantor bewies, dass manche Unendlichkeiten größer sind als andere.",'daily.fact.9':"Ein 'Googolplex' ist eine 1 mit einem Googol Nullen — zu groß, um in diesem Universum geschrieben zu werden.",'daily.fact.10':"In einer Gruppe von 23 Personen liegt die Wahrscheinlichkeit gemeinsamer Geburtstage über 50%.",'daily.fact.11':"1 + 2 + 3 + … ergibt in einem bestimmten Sinn −1/12.",'daily.fact.12':"Negative Zahlen galten lange als 'absurd' in Europa.",'daily.fact.13':"Ein Möbiusband hat nur eine Seite. Schneide es einmal mittig durch.",'daily.fact.14':"Knotentheorie hilft heute Biologen, DNA zu verstehen.",'daily.fact.15':"Für den Umfang einer Ellipse existiert keine geschlossene Formel.",'daily.fact.16':"Gauß summierte 1+2+…+100 als Kind in Sekunden: 50 Paare zu je 101.",'daily.fact.17':"Der Rand der Mandelbrot-Menge hat Hausdorff-Dimension 2.",'daily.fact.18':"Keine geschachtelten Wurzeln ganzer Zahlen ergeben eine ganze Zahl (außer trivial).",'daily.fact.19':"Ramanujan hielt 1729 für gewöhnlich — bis er sah, dass es die kleinste Zahl als Summe zweier Kuben auf zwei Arten ist.",'daily.fact.20':"Ein 8×8-Brett ohne zwei gegenüberliegende Ecken lässt sich nicht mit Dominos belegen.",'daily.fact.21':"Es gibt genau 17 Tapetenmuster-Symmetriegruppen.",'daily.fact.22':"Die harmonische Reihe 1 + 1/2 + 1/3 + … divergiert, sehr langsam.",'daily.fact.23':"Jede gerade Zahl > 2 ist vermutlich Summe zweier Primzahlen (Goldbach, unbewiesen).",
     'settings.section.angle':'Winkeleinheit','settings.section.angle.desc':'Wie sin, cos, tan und ihre Inversen die Eingabe interpretieren.',
     'settings.angle.rad':'Bogenmaß','settings.angle.deg':'Grad',
     'settings.section.decimals':'Dezimalstellen','settings.section.decimals.desc':'Maximale Stellen nach dem Dezimalpunkt. Im Auto-Modus werden nachgestellte Nullen entfernt.',
@@ -3641,6 +4220,57 @@ const I18N = {
     'onboard.f.formulas':'80+ 条物理、化学和数学参考公式。',
     'onboard.btn.start':'开始吧 →',
     'calc.suggest.label':'试试这些',
+    'whatsnext.label':'下一步？',
+    'whatsnext.graph':'绘图','whatsnext.solve':'求解','whatsnext.factor':'因式分解','whatsnext.diff':'求导','whatsnext.integ':'积分','whatsnext.similar':'练习类似题',
+    'whatsnext.practice.hint':'选择主题练习类似的题目',
+    'egg.42':'42 — 生命、宇宙以及一切的答案 🌌',
+    'egg.euler':'欧拉恒等式 — 数学中最美的方程 ✨',
+    'egg.pi':'π 日快乐！🥧','egg.infinity':'你已抵达无穷大⋯ 还要更远 🚀','egg.imaginary':'欢迎来到虚数王国 🌀','egg.phi':'黄金比例 — 大自然最爱的数字 🌻','egg.googol':"这就是 googol — 1 后面跟 100 个 0",'egg.zerozero':'数学家至今还在争论这个 🤔','egg.zerofact':'0! = 1，按约定 ✨',
+    'streak.milestone':'连续 {n} 天！继续加油。',
+    'streak.tooltip':'连续 {n} 天（最佳：{best}）',
+    'greet.morning':'早上好！','greet.afternoon':'下午好！','greet.evening':'晚上好！','greet.late':'还在熬夜？',
+    'hist.search':'搜索历史…','hist.noMatch':'没有匹配的计算','hist.pin':'置顶','hist.unpin':'取消置顶',
+    'toast.enterExprFirst':'请先输入表达式',
+    'daily.label':'你知道吗',
+    'time.justNow':'刚刚',
+    'whatsnext.steps':'查看步骤',
+    'toast.exprIncomplete':'表达式似乎未完成——请补全',
+    'toast.copyFail':'复制失败——请重试',
+    'settings.section.sync':'多设备同步',
+    'settings.section.sync.desc':'用一次性 6 位数字代码把设置、历史和练习统计同步到另一台设备。无需账户。代码 10 分钟后失效。',
+    'sync.generate':'生成同步代码',
+    'sync.codeExpires':'10 分钟后失效——请在另一台设备上输入',
+    'sync.enterCode':'123456',
+    'sync.redeem':'应用代码',
+    'sync.invalidCode':'请输入 6 位数字代码',
+    'sync.codeExpired':'代码已过期或已使用',
+    'sync.imported':'✓ 已同步！数据已导入此设备',
+    'sync.error':'同步失败——请检查网络',
+    'confirm.sync.import':'用同步的数据替换此设备的数据吗？\n\n你当前的设置、历史和练习统计将被覆盖。',
+    'settings.section.privacy':'隐私',
+    'settings.section.privacy.desc':'Mathix 收集匿名使用数据——页面访问、功能计数、错误率——以改进应用。不会收集你的数学表达式，不会收集个人信息。',
+    'settings.toggle.shareUsage':'共享匿名使用数据',
+    'settings.toggle.shareUsage.hint':'帮助我们了解哪些功能重要、哪里出问题。',
+    'privacy.deviceId':'你的匿名设备 ID',
+    'privacy.copy':'复制',
+    'privacy.rotate':'重置',
+    'privacy.deviceIdRotated':'设备 ID 已重置。正在重新加载…',
+    'confirm.rotateDeviceId':'要重置设备 ID 吗？\n\n此设备将与之前的使用记录断开。页面将重新加载。',
+    'settings.section.account':'账户',
+    'settings.section.account.desc':'登录以备份数据并在设备间同步。你的数学表达式保持私密——只同步设置、历史和统计。',
+    'account.anonStatus':'匿名 · 仅此设备',
+    'account.anonSub':'登录以妥善保存所有内容，并在手机、电脑或平板上继续使用。',
+    'account.emailPlaceholder':'you@example.com',
+    'account.sendLink':'发送登录链接',
+    'account.magicSent':'✓ 已发送登录链接，请查收邮箱',
+    'account.linkSent':'✓ 已发送确认邮件——点击链接完成此设备的绑定',
+    'account.invalidEmail':'这个邮箱地址看起来不正确',
+    'account.signInError':'发送链接失败，请稍后重试。',
+    'account.syncOn':'已在所有设备同步',
+    'account.signOut':'退出登录',
+    'account.signedOut':'已退出登录',
+    'confirm.signOut':'要退出 Mathix 吗？\n\n此设备的本地数据保留。要在其他设备再次使用，请重新登录。',
+    'daily.fact.0':"素数有无穷多个——欧几里得在 2000 多年前就证明了。",'daily.fact.1':"0.999……（循环）正好等于 1。它们是同一个数。",'daily.fact.2':"π 出现在不可思议的地方——甚至蜿蜒河流的长度里。",'daily.fact.3':"任何地图最多用 4 种颜色就能让相邻地区不同色。",'daily.fact.4':"一副 52 张扑克牌的排列方式比地球上的原子还多。",'daily.fact.5':"欧拉恒等式 e^(iπ) + 1 = 0 把五个基本常数联系起来。",'daily.fact.6':"零是罗马数字中唯一没有正向表示的数。",'daily.fact.7':"斐波那契数列出现在向日葵、松果和星系中。",'daily.fact.8':"康托证明：有些无穷比其他无穷更大。",'daily.fact.9':"「googolplex」是 1 后面跟一个 googol 个零——比这个宇宙能容纳的字符还多。",'daily.fact.10':"23 人的房间里有两人生日相同的概率超过 50%。",'daily.fact.11':"1 + 2 + 3 + … 在某种意义下等于 −1/12，物理学家很喜欢。",'daily.fact.12':"负数曾被欧洲数学家视为「荒谬」。",'daily.fact.13':"莫比乌斯带只有一面。试着沿中线剪一次试试。",'daily.fact.14':"纯粹好奇产生的纽结理论，如今帮助生物学家理解 DNA。",'daily.fact.15':"椭圆周长没有封闭公式，只能用级数近似。",'daily.fact.16':"高斯小时候用配对法在几秒内算出了 1+2+…+100。",'daily.fact.17':"曼德布罗集的边界豪斯多夫维数为 2。",'daily.fact.18':"整数嵌套根式不会得到整数（除非平凡情况）。",'daily.fact.19':"拉马努金看到 1729 觉得平平无奇——后来发现它是最小的能用两种方式表示为两个立方和的数。",'daily.fact.20':"8×8 棋盘去掉两个对角后无法用多米诺骨牌铺满。",'daily.fact.21':"壁纸对称群恰好有 17 种。",'daily.fact.22':"调和级数 1 + 1/2 + 1/3 + … 发散，但非常缓慢。",'daily.fact.23':"任何大于 2 的偶数都是两个素数之和（哥德巴赫猜想，尚未证明）。",
     'settings.section.angle':'角度单位','settings.section.angle.desc':'sin、cos、tan 及其反函数如何解释输入。',
     'settings.angle.rad':'弧度','settings.angle.deg':'角度',
     'settings.section.decimals':'小数精度','settings.section.decimals.desc':'小数点后的最大位数。在自动模式下会去除尾随的零。',
@@ -4109,6 +4739,8 @@ const SETTINGS_DEFAULTS = {
   fontSize: 'normal',           // small | normal | large
   reduceMotion: false,          // disable animations + orbs
   compactMode: false,           // denser layout
+  // Privacy
+  shareUsageData: true,         // send anonymous usage events to help improve the app
   // Calculator
   angleUnit: 'rad',             // rad | deg
   decimals: 10,                 // 4 | 6 | 10
@@ -4120,6 +4752,49 @@ const SETTINGS_DEFAULTS = {
   // Data
   historyLimit: 30,             // 10 | 30 | 100 | 200
 };
+/* ─── Device identity ─────────────────────────────────────────────────────
+   Anonymous, persistent per-device ID. Generated on first launch. Used to:
+     • per-device rate limiting (more accurate than per-IP, which fails on shared networks)
+     • analytics aggregation (without PII)
+     • cross-device sync (the 6-digit-code flow)
+     • future personalization
+   This is NOT a user account. No email, no password. The user can rotate the ID at any
+   time from Settings → Privacy. Sent on every worker request as `X-Device-Id`.
+─────────────────────────────────────────────────────────────────────────── */
+function _generateDeviceId() {
+  // RFC4122 v4-ish — uses crypto.getRandomValues if available, falls back to Math.random
+  const bytes = new Uint8Array(16);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(bytes);
+  else for (let i = 0; i < 16; i++) bytes[i] = (Math.random() * 256) | 0;
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;  // version 4
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;  // variant
+  const hex = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+  return hex.slice(0,8) + '-' + hex.slice(8,12) + '-' + hex.slice(12,16) + '-' + hex.slice(16,20) + '-' + hex.slice(20);
+}
+function getDeviceId() {
+  try {
+    let id = localStorage.getItem('mathix_device_id');
+    if (!id || id.length < 30) {
+      id = _generateDeviceId();
+      localStorage.setItem('mathix_device_id', id);
+      // Record install time on first ID generation (for cohort analysis)
+      try { localStorage.setItem('mathix_install_at', new Date().toISOString()); } catch(e) {}
+    }
+    return id;
+  } catch(e) {
+    // localStorage blocked — fall back to in-memory session ID (loses persistence but works)
+    if (!window.__mxSessionId) window.__mxSessionId = _generateDeviceId();
+    return window.__mxSessionId;
+  }
+}
+function rotateDeviceId() {
+  try { localStorage.removeItem('mathix_device_id'); } catch(e) {}
+  return getDeviceId();
+}
+// Eagerly establish the ID so early analytics events have it
+const DEVICE_ID = getDeviceId();
+const INSTALL_AT = (() => { try { return localStorage.getItem('mathix_install_at') || new Date().toISOString(); } catch(e) { return new Date().toISOString(); } })();
+
 let settings = (() => {
   const dflt = Object.assign({}, SETTINGS_DEFAULTS);
   try {
@@ -4143,7 +4818,622 @@ let settings = (() => {
 })();
 function persistSettings() {
   try { localStorage.setItem('mathix_settings', JSON.stringify(settings)); } catch(e) {}
+  // Debounced cloud push (typically called on every toggle/pill click)
+  try { mxSync.pushSettings(); } catch(e) {}
 }
+
+/* ─── Analytics tracker ───────────────────────────────────────────────────
+   Privacy-respecting, opt-out, batched. Events buffer in memory and flush:
+     • when 10 events have accumulated
+     • every 30 seconds
+     • on `pagehide` / `visibilitychange→hidden` (so the last events make it out)
+   Each event sends: { event, props, ts, deviceId, lang, version, session }
+   No PII. Strings are bucketed (e.g. expression LENGTH, not the expression itself).
+   The user can disable everything from Settings → Privacy. The flush endpoint is
+   non-blocking and uses navigator.sendBeacon when possible.
+─────────────────────────────────────────────────────────────────────────── */
+const ANALYTICS_URL = WORKER_URL.replace(/\/api\/ai$/, '/api/analytics');
+const APP_VERSION = '1.4';
+const SESSION_ID = (() => { const a = new Uint8Array(8); if (typeof crypto !== 'undefined' && crypto.getRandomValues) crypto.getRandomValues(a); return [...a].map(b => b.toString(16).padStart(2,'0')).join(''); })();
+let _analyticsBuffer = [];
+let _analyticsTimer = null;
+
+function track(event, props) {
+  // Respect the opt-out
+  if (settings && settings.shareUsageData === false) return;
+  // Sanitize props — never log raw expressions, AI responses, or anything potentially identifying
+  const safeProps = {};
+  if (props && typeof props === 'object') {
+    for (const [k, v] of Object.entries(props)) {
+      if (v == null) continue;
+      if (typeof v === 'number' || typeof v === 'boolean') safeProps[k] = v;
+      else if (typeof v === 'string') {
+        // Whitelist only short, non-PII string props (settings keys, error codes, page names)
+        if (v.length <= 64 && !/[@<>]/.test(v)) safeProps[k] = v;
+      }
+    }
+  }
+  _analyticsBuffer.push({
+    event,
+    props: safeProps,
+    ts: Date.now(),
+  });
+  if (_analyticsBuffer.length >= 10) flushAnalytics();
+  else scheduleAnalyticsFlush();
+}
+function scheduleAnalyticsFlush() {
+  if (_analyticsTimer) return;
+  _analyticsTimer = setTimeout(() => { _analyticsTimer = null; flushAnalytics(); }, 30_000);
+}
+function flushAnalytics(opts) {
+  if (_analyticsBuffer.length === 0) return;
+  if (settings && settings.shareUsageData === false) { _analyticsBuffer = []; return; }
+  const batch = _analyticsBuffer;
+  _analyticsBuffer = [];
+  if (_analyticsTimer) { clearTimeout(_analyticsTimer); _analyticsTimer = null; }
+  const payload = {
+    deviceId: DEVICE_ID,
+    session: SESSION_ID,
+    lang: (settings && settings.language) || 'en',
+    version: APP_VERSION,
+    installedAt: INSTALL_AT,
+    events: batch,
+  };
+  try {
+    const body = JSON.stringify(payload);
+    // sendBeacon is fire-and-forget and works during pagehide; preferred for the last flush.
+    if (opts && opts.useBeacon && navigator.sendBeacon) {
+      navigator.sendBeacon(ANALYTICS_URL, new Blob([body], { type: 'application/json' }));
+      return;
+    }
+    fetch(ANALYTICS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Device-Id': DEVICE_ID },
+      body,
+      keepalive: true,
+    }).catch(() => {
+      // Silent failure — analytics must never affect UX. Drop the batch.
+    });
+  } catch(e) { /* silent */ }
+}
+// Flush on tab close / hide so we don't lose the last events
+window.addEventListener('pagehide',         () => flushAnalytics({ useBeacon: true }));
+window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushAnalytics({ useBeacon: true }); });
+// Initial "session start" event
+setTimeout(() => track('session_start', { theme: (settings && settings.theme) || 'dark', firstRun: !localStorage.getItem('mathix_seen') ? 1 : 0 }), 800);
+try { localStorage.setItem('mathix_seen', '1'); } catch(e) {}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MXSYNC — Supabase data layer
+   ─────────────────────────────────────────────────────────────────────────
+   Local-first architecture. Every read/write hits localStorage immediately
+   (UI never waits) and a best-effort Supabase sync runs in the background.
+   On boot, we hydrate from Supabase if signed in, overriding local with cloud.
+   Strategy:
+     1. On startup, if SUPABASE_ENABLED, try anonymous sign-in (auto identity).
+     2. After auth, hydrate (pull all user data → localStorage → re-render UI).
+     3. After the first hydrate, push any localStorage data that the cloud
+        doesn't have yet (the migration). Marked done with a per-user flag so
+        we never re-migrate.
+     4. Subsequent local writes call mxSync.* methods which mirror to Supabase
+        in the background. Nothing in the UI ever awaits the network.
+     5. Real-time subscriptions push remote changes back into localStorage and
+        re-render — gives "open another tab and see the same thing" continuity.
+═══════════════════════════════════════════════════════════════════════════ */
+const mxSync = (function() {
+  let _client = null;        // Supabase client (or null when disabled)
+  let _user   = null;        // current auth.user (or null)
+  let _ready  = false;       // true once initial hydration completes
+  let _hydrating = false;
+  let _hydrateRequested = false;  // queue flag — if hydrate requested while running
+  let _channel = null;       // realtime channel
+  let _channelUid = null;    // uid the current channel is bound to
+  const _listeners = new Set();
+  let _initPromise = null;
+
+  // Echo-suppression: we receive postgres_changes for our OWN writes too.
+  // After every local write, we record the moment for that table; realtime
+  // events arriving within the suppression window for the same table are
+  // ignored. Prevents flicker, lost in-flight ids, and write→event→re-fetch
+  // cycles that can clobber more recent local state.
+  const ECHO_SUPPRESS_MS = 2500;
+  const _lastLocalWriteAt = { history_items: 0, user_settings: 0, practice_stats: 0, daily_streaks: 0 };
+  function _markLocalWrite(table) { _lastLocalWriteAt[table] = Date.now(); }
+  function _isEcho(table) { return (Date.now() - (_lastLocalWriteAt[table] || 0)) < ECHO_SUPPRESS_MS; }
+
+  // Lightweight diagnostics — set window.__mxDebug = true in DevTools to enable.
+  function _log(/* ...args */) {
+    if (typeof window !== 'undefined' && window.__mxDebug) {
+      // eslint-disable-next-line no-console
+      console.info.apply(console, ['[mxSync]'].concat([].slice.call(arguments)));
+    }
+  }
+
+  function _emit(state) { for (const fn of _listeners) { try { fn(state); } catch(e){} } }
+  function getState() { return { ready: _ready, user: _user, anonymous: !!_user?.is_anonymous, email: _user?.email || null, enabled: SUPABASE_ENABLED }; }
+  function onAuthChange(cb) { _listeners.add(cb); cb(getState()); return () => _listeners.delete(cb); }
+
+  /** Initialize: load SDK, restore session OR sign in anonymously, hydrate, subscribe. */
+  function init() {
+    if (_initPromise) return _initPromise;
+    if (!SUPABASE_ENABLED) { _ready = true; _emit(getState()); return Promise.resolve(); }
+    _initPromise = (async () => {
+      _client = await getSupabase();
+      if (!_client) { _ready = true; _emit(getState()); _log('SDK failed to load'); return; }
+
+      // 1. Restore existing session if present
+      try {
+        const { data } = await _client.auth.getSession();
+        _user = data?.session?.user || null;
+        if (_user) _log('restored session', _user.id, _user.is_anonymous ? 'anon' : _user.email);
+      } catch(e) { _log('getSession failed', e?.message); }
+
+      // 2. If no session, try anonymous sign-in (silently).
+      if (!_user) {
+        try {
+          const { data, error } = await _client.auth.signInAnonymously();
+          if (error) _log('anon sign-in failed', error.message);
+          else if (data?.user) { _user = data.user; _log('anon signed in', _user.id); }
+        } catch(e) { _log('anon sign-in threw', e?.message); }
+      }
+
+      // 3. Listen for future auth changes. Critical: we ONLY re-hydrate on real
+      //    user-id changes. TOKEN_REFRESHED, INITIAL_SESSION, USER_UPDATED with
+      //    same id all pass through without triggering redundant work.
+      _client.auth.onAuthStateChange((event, session) => {
+        const prevId = _user?.id;
+        const nextUser = session?.user || null;
+        const nextId = nextUser?.id;
+        _log('auth event', event, prevId, '→', nextId);
+        _user = nextUser;
+        _emit(getState());
+        if (!nextUser) { _stopRealtime(); return; }
+        // Re-hydrate only when identity actually changes (sign-in, sign-out→in, link)
+        if (nextId !== prevId) {
+          // If init's hydrate is in-flight, queue rather than drop
+          requestHydrate();
+        }
+      });
+
+      // 4. First hydrate
+      if (_user) await hydrate();
+      _ready = true;
+      _emit(getState());
+    })();
+    return _initPromise;
+  }
+
+  /** Public re-hydrate request: deduped + queued. Safe to call from anywhere. */
+  function requestHydrate() {
+    if (_hydrating) { _hydrateRequested = true; return Promise.resolve(); }
+    return hydrate();
+  }
+
+  /** Pull all user data from Supabase into localStorage; trigger UI refresh. */
+  async function hydrate() {
+    if (!_client || !_user) return;
+    if (_hydrating) { _hydrateRequested = true; return; }
+    _hydrating = true;
+    try {
+      const uid = _user.id;
+      _log('hydrate start', uid);
+      const [historyRes, settingsRes, statsRes, streakRes] = await Promise.all([
+        _client.from('history_items').select('*').order('created_at', { ascending: false }).limit(500),
+        _client.from('user_settings').select('data').eq('user_id', uid).maybeSingle(),
+        _client.from('practice_stats').select('*').eq('user_id', uid).maybeSingle(),
+        _client.from('daily_streaks').select('*').eq('user_id', uid).maybeSingle(),
+      ]);
+
+      // If hydrate failed for ANY entity, surface the error and bail without
+      // touching local state. Prevents a partial-hydrate from corrupting local data.
+      const fetchErr = historyRes.error || settingsRes.error || statsRes.error || streakRes.error;
+      if (fetchErr) {
+        _log('hydrate fetch error', fetchErr.message);
+        return;
+      }
+
+      const cloudHistory  = historyRes.data || [];
+      const cloudSettings = settingsRes.data?.data || null;
+      const cloudStats    = statsRes.data || null;
+      const cloudStreak   = streakRes.data || null;
+
+      const migratedKey = 'mathix_migrated_to_supabase_' + uid;
+      const alreadyMigrated = localStorage.getItem(migratedKey) === '1';
+      // Track per-entity migration success — only flag the user as migrated when
+      // EVERY entity that needed migrating succeeded. Prevents the bug where one
+      // failed insert silently locks us out of retrying on next load.
+      let allMigrationsOk = true;
+
+      // ── HISTORY ──
+      if (cloudHistory.length === 0 && !alreadyMigrated && Array.isArray(history) && history.length) {
+        const ok = await _migrateHistoryUp(uid);
+        if (!ok) allMigrationsOk = false;
+      } else if (cloudHistory.length > 0) {
+        const merged = cloudHistory.map(h => ({
+          id: h.id, expr: h.expr, res: h.result,
+          t: new Date(h.created_at).getTime(), pinned: !!h.pinned,
+        }));
+        history = merged;
+        try { localStorage.setItem('mathix_hist', JSON.stringify(history)); } catch(e) {}
+        if (typeof renderHist === 'function') renderHist();
+      }
+
+      // ── SETTINGS ──
+      if (cloudSettings && typeof cloudSettings === 'object') {
+        const merged = Object.assign({}, SETTINGS_DEFAULTS, cloudSettings);
+        // Only re-apply if something actually changed — avoids needless re-render churn
+        const before = JSON.stringify(settings);
+        const after  = JSON.stringify(merged);
+        if (before !== after) {
+          settings = merged;
+          try { localStorage.setItem('mathix_settings', JSON.stringify(settings)); } catch(e) {}
+          if (typeof applySettings === 'function') applySettings();
+          if (typeof syncSettingsUI === 'function') syncSettingsUI();
+        }
+      } else if (!alreadyMigrated) {
+        _markLocalWrite('user_settings');
+        const { error } = await _client.from('user_settings').upsert({
+          user_id: uid, data: settings, updated_at: new Date().toISOString(),
+        });
+        if (error) { _log('settings migrate err', error.message); allMigrationsOk = false; }
+      }
+
+      // ── PRACTICE STATS ──
+      if (cloudStats) {
+        const next = {
+          total:   cloudStats.total   || 0,
+          correct: cloudStats.correct || 0,
+          streak:  cloudStats.current_streak || 0,
+          best:    cloudStats.best_streak    || 0,
+        };
+        if (JSON.stringify(practiceStats) !== JSON.stringify(next)) {
+          practiceStats = next;
+          try { localStorage.setItem('mathix_stats', JSON.stringify(practiceStats)); } catch(e) {}
+          if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
+        }
+      } else if (!alreadyMigrated && practiceStats && (practiceStats.total > 0 || practiceStats.best > 0)) {
+        _markLocalWrite('practice_stats');
+        const { error } = await _client.from('practice_stats').upsert({
+          user_id: uid,
+          total: practiceStats.total || 0,
+          correct: practiceStats.correct || 0,
+          current_streak: practiceStats.streak || 0,
+          best_streak: practiceStats.best || 0,
+        });
+        if (error) { _log('stats migrate err', error.message); allMigrationsOk = false; }
+      }
+
+      // ── STREAK ──
+      if (cloudStreak) {
+        try {
+          const localStreak = JSON.parse(localStorage.getItem('mathix_streak') || 'null') || {};
+          const merged = {
+            last: cloudStreak.last_active_date || localStreak.last,
+            count: Math.max(cloudStreak.current_streak || 0, localStreak.count || 0),
+            best:  Math.max(cloudStreak.best_streak || 0,    localStreak.best  || 0),
+          };
+          localStorage.setItem('mathix_streak', JSON.stringify(merged));
+          if (typeof renderStreakBadge === 'function') renderStreakBadge();
+        } catch(e) {}
+      } else if (!alreadyMigrated) {
+        try {
+          const localStreak = JSON.parse(localStorage.getItem('mathix_streak') || 'null');
+          if (localStreak && localStreak.count > 0) {
+            _markLocalWrite('daily_streaks');
+            const { error } = await _client.from('daily_streaks').upsert({
+              user_id: uid,
+              last_active_date: localStreak.last || null,
+              current_streak: localStreak.count || 0,
+              best_streak: localStreak.best || 0,
+            });
+            if (error) { _log('streak migrate err', error.message); allMigrationsOk = false; }
+          }
+        } catch(e) {}
+      }
+
+      // Bind the device row to this user (best-effort; not part of migration gate)
+      try {
+        await _client.from('devices').upsert({
+          device_id: DEVICE_ID,
+          user_id: uid,
+          user_agent: (navigator.userAgent || '').slice(0, 500),
+          last_seen_at: new Date().toISOString(),
+        });
+      } catch(e) {}
+
+      // Only flag migration as done when all required pushes succeeded —
+      // otherwise we'd lose local data permanently if one failed.
+      if (allMigrationsOk) {
+        try { localStorage.setItem(migratedKey, '1'); } catch(e) {}
+      } else {
+        _log('migration not flagged complete — will retry on next load');
+      }
+
+      _startRealtime(uid);
+      _log('hydrate done');
+    } catch (err) {
+      _log('hydrate threw', err?.message);
+    } finally {
+      _hydrating = false;
+      // If a hydrate was requested while one was running, run it now
+      if (_hydrateRequested) {
+        _hydrateRequested = false;
+        // Defer to the next tick so we don't recurse synchronously
+        setTimeout(() => hydrate().catch(() => {}), 0);
+      }
+    }
+  }
+
+  async function _migrateHistoryUp(uid) {
+    if (!Array.isArray(history) || history.length === 0) return true;
+    // Push in chronological order so the cloud created_at reflects the original order
+    const rows = [...history].reverse().slice(0, 500).map(h => ({
+      user_id: uid,
+      expr: String(h.expr || '').slice(0, 2000),
+      result: String(h.res || '').slice(0, 2000),
+      pinned: !!h.pinned,
+      created_at: h.t ? new Date(h.t).toISOString() : new Date().toISOString(),
+    }));
+    if (rows.length === 0) return true;
+    _markLocalWrite('history_items');
+    const { data, error } = await _client.from('history_items').insert(rows).select('id, created_at');
+    if (error) {
+      _log('history migrate insert error', error.message);
+      return false;
+    }
+    // Patch local items with their new cloud ids so subsequent pin/delete works
+    if (Array.isArray(data) && data.length === rows.length) {
+      // rows is reversed-then-sliced; data comes back in insert order = chronological
+      // history is most-recent-first; data is oldest-first. Reverse data to align.
+      const oldestToNewest = data.slice().reverse();
+      for (let i = 0; i < Math.min(history.length, oldestToNewest.length); i++) {
+        if (!history[i].id) history[i].id = oldestToNewest[i].id;
+      }
+      try { localStorage.setItem('mathix_hist', JSON.stringify(history)); } catch(e) {}
+    }
+    return true;
+  }
+
+  function _startRealtime(uid) {
+    // Don't tear down + recreate if we're already on the right channel
+    if (_channel && _channelUid === uid) return;
+    _stopRealtime();
+    if (!_client) return;
+    try {
+      _channelUid = uid;
+      _channel = _client
+        .channel('mxsync-' + uid)
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'history_items', filter: `user_id=eq.${uid}` },
+          (p) => { if (_isEcho('history_items')) { _log('echo skip history'); return; } _onRemoteHistoryChange().catch(() => {}); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'user_settings', filter: `user_id=eq.${uid}` },
+          (p) => { if (_isEcho('user_settings')) { _log('echo skip settings'); return; } _onRemoteSettingsChange(p).catch(() => {}); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'practice_stats', filter: `user_id=eq.${uid}` },
+          (p) => { if (_isEcho('practice_stats')) { _log('echo skip stats'); return; } _onRemoteStatsChange(p).catch(() => {}); })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_streaks', filter: `user_id=eq.${uid}` },
+          (p) => { if (_isEcho('daily_streaks')) { _log('echo skip streak'); return; } _onRemoteStreakChange(p).catch(() => {}); })
+        .subscribe((status) => { _log('realtime status', status); });
+    } catch(e) { _log('realtime subscribe error', e?.message); }
+  }
+  function _stopRealtime() {
+    try { _channel?.unsubscribe(); } catch(e) {}
+    _channel = null;
+    _channelUid = null;
+  }
+
+  async function _onRemoteHistoryChange() {
+    if (!_client || !_user) return;
+    const { data, error } = await _client.from('history_items').select('*').order('created_at', { ascending: false }).limit(500);
+    if (error || !Array.isArray(data)) return;
+    const next = data.map(h => ({ id: h.id, expr: h.expr, res: h.result, t: new Date(h.created_at).getTime(), pinned: !!h.pinned }));
+    // Cheap shallow check — skip re-render if nothing actually changed
+    if (next.length === history.length && next.every((r, i) => r.id === history[i]?.id && r.pinned === history[i]?.pinned)) return;
+    history = next;
+    try { localStorage.setItem('mathix_hist', JSON.stringify(history)); } catch(e) {}
+    if (typeof renderHist === 'function') renderHist();
+  }
+  async function _onRemoteSettingsChange(payload) {
+    const data = payload?.new?.data;
+    if (!data || typeof data !== 'object') return;
+    const merged = Object.assign({}, SETTINGS_DEFAULTS, data);
+    if (JSON.stringify(settings) === JSON.stringify(merged)) return; // no-op
+    settings = merged;
+    try { localStorage.setItem('mathix_settings', JSON.stringify(settings)); } catch(e) {}
+    if (typeof applySettings === 'function') applySettings();
+    if (typeof syncSettingsUI === 'function') syncSettingsUI();
+  }
+  async function _onRemoteStatsChange(payload) {
+    const s = payload?.new;
+    if (!s) return;
+    const next = { total: s.total || 0, correct: s.correct || 0, streak: s.current_streak || 0, best: s.best_streak || 0 };
+    if (JSON.stringify(practiceStats) === JSON.stringify(next)) return;
+    practiceStats = next;
+    try { localStorage.setItem('mathix_stats', JSON.stringify(practiceStats)); } catch(e) {}
+    if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
+  }
+  async function _onRemoteStreakChange(payload) {
+    const s = payload?.new;
+    if (!s) return;
+    try {
+      const local = JSON.parse(localStorage.getItem('mathix_streak') || 'null') || {};
+      const next = {
+        last:  s.last_active_date || local.last,
+        count: Math.max(s.current_streak || 0, local.count || 0),
+        best:  Math.max(s.best_streak    || 0, local.best  || 0),
+      };
+      if (JSON.stringify(local) === JSON.stringify(next)) return;
+      localStorage.setItem('mathix_streak', JSON.stringify(next));
+      if (typeof renderStreakBadge === 'function') renderStreakBadge();
+    } catch(e) {}
+  }
+
+  // ─── Public mutation API ─────────────────────────────────────────────
+  async function addHistoryItem(item) {
+    if (!_client || !_user) return null;
+    try {
+      _markLocalWrite('history_items');
+      const { data, error } = await _client.from('history_items').insert({
+        user_id: _user.id,
+        expr: String(item.expr || '').slice(0, 2000),
+        result: String(item.res || '').slice(0, 2000),
+        pinned: !!item.pinned,
+      }).select('id').maybeSingle();
+      if (error) { _log('history insert err', error.message); return null; }
+      return data?.id || null;
+    } catch(e) { return null; }
+  }
+  async function updateHistoryPin(id, pinned) {
+    if (!_client || !_user || !id) return;
+    try {
+      _markLocalWrite('history_items');
+      await _client.from('history_items').update({ pinned: !!pinned }).eq('id', id);
+    } catch(e) {}
+  }
+  async function deleteHistoryItem(id) {
+    if (!_client || !_user || !id) return;
+    try {
+      _markLocalWrite('history_items');
+      await _client.from('history_items').delete().eq('id', id);
+    } catch(e) {}
+  }
+  async function clearHistory() {
+    if (!_client || !_user) return;
+    try {
+      _markLocalWrite('history_items');
+      await _client.from('history_items').delete().eq('user_id', _user.id);
+    } catch(e) {}
+  }
+
+  // Debounced settings push so a flurry of toggle clicks → one network call.
+  // Also flushed on pagehide so a setting changed just before close still saves.
+  let _settingsPushTimer = null;
+  let _settingsPending = false;
+  async function _flushSettingsPush() {
+    if (!_settingsPending || !_client || !_user) return;
+    _settingsPending = false;
+    clearTimeout(_settingsPushTimer); _settingsPushTimer = null;
+    _markLocalWrite('user_settings');
+    try {
+      await _client.from('user_settings').upsert({
+        user_id: _user.id, data: settings, updated_at: new Date().toISOString(),
+      });
+    } catch(e) {}
+  }
+  function pushSettings() {
+    if (!_client || !_user) return;
+    _settingsPending = true;
+    clearTimeout(_settingsPushTimer);
+    _settingsPushTimer = setTimeout(_flushSettingsPush, 600);
+  }
+
+  // Same debounce pattern for stats and streak — practice answers can fire fast
+  let _statsPushTimer = null, _statsPending = false;
+  async function _flushStatsPush() {
+    if (!_statsPending || !_client || !_user) return;
+    _statsPending = false;
+    clearTimeout(_statsPushTimer); _statsPushTimer = null;
+    _markLocalWrite('practice_stats');
+    try {
+      await _client.from('practice_stats').upsert({
+        user_id: _user.id,
+        total: practiceStats.total || 0,
+        correct: practiceStats.correct || 0,
+        current_streak: practiceStats.streak || 0,
+        best_streak: practiceStats.best || 0,
+      });
+    } catch(e) {}
+  }
+  function pushStats() {
+    if (!_client || !_user) return;
+    _statsPending = true;
+    clearTimeout(_statsPushTimer);
+    _statsPushTimer = setTimeout(_flushStatsPush, 400);
+  }
+
+  let _streakPushTimer = null, _streakPending = null;
+  async function _flushStreakPush() {
+    if (!_streakPending || !_client || !_user) return;
+    const streak = _streakPending; _streakPending = null;
+    clearTimeout(_streakPushTimer); _streakPushTimer = null;
+    _markLocalWrite('daily_streaks');
+    try {
+      await _client.from('daily_streaks').upsert({
+        user_id: _user.id,
+        last_active_date: streak.last || null,
+        current_streak: streak.count || 0,
+        best_streak: streak.best || 0,
+      });
+    } catch(e) {}
+  }
+  function pushStreak(streak) {
+    if (!_client || !_user || !streak) return;
+    _streakPending = streak;
+    clearTimeout(_streakPushTimer);
+    _streakPushTimer = setTimeout(_flushStreakPush, 400);
+  }
+
+  // Flush all pending writes when the page is about to be hidden — protects
+  // against losing the very last setting/stat change before tab close.
+  function _flushAll() {
+    _flushSettingsPush().catch(() => {});
+    _flushStatsPush().catch(() => {});
+    _flushStreakPush().catch(() => {});
+  }
+  if (typeof window !== 'undefined') {
+    window.addEventListener('pagehide',         _flushAll);
+    window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') _flushAll(); });
+  }
+
+  async function addPracticeSession(s) {
+    if (!_client || !_user) return;
+    try {
+      await _client.from('practice_sessions').insert({
+        user_id: _user.id,
+        topic: s.topic || 'unknown',
+        difficulty: s.difficulty || 'easy',
+        total: s.total | 0,
+        correct: s.correct | 0,
+        duration_ms: s.durationMs ? (s.durationMs | 0) : null,
+      });
+    } catch(e) {}
+  }
+
+  // ─── Auth API ───
+  async function signInWithEmail(email) {
+    if (!_client) throw new Error('Supabase not configured');
+    const trimmed = (email || '').trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed)) throw new Error('invalid_email');
+    const isAnonymous = !!_user?.is_anonymous;
+    if (isAnonymous) {
+      // Linking flow — preserves all data already stored under the anonymous user.id
+      const { error } = await _client.auth.updateUser({ email: trimmed });
+      if (error) throw error;
+      return { linked: true };
+    }
+    // Pure sign-in — magic link
+    const { error } = await _client.auth.signInWithOtp({
+      email: trimmed,
+      options: { emailRedirectTo: location.origin + location.pathname },
+    });
+    if (error) throw error;
+    return { sent: true };
+  }
+  async function signOut() {
+    if (!_client) return;
+    // Flush any pending writes before destroying the session
+    _flushAll();
+    try { await _client.auth.signOut(); } catch(e) {}
+    _user = null;
+    _stopRealtime();
+    _emit(getState());
+  }
+
+  return {
+    init, hydrate: requestHydrate, getState, onAuthChange,
+    addHistoryItem, updateHistoryPin, deleteHistoryItem, clearHistory,
+    pushSettings, pushStats, pushStreak, addPracticeSession,
+    signInWithEmail, signOut,
+  };
+})();
 
 // Capture original trig fns once so we can swap between rad/deg without drifting
 const _origTrig = (typeof math !== 'undefined') ? {
@@ -4242,6 +5532,14 @@ function syncSettingsUI() {
   tg('toggle-compact-mode',  settings.compactMode);
   tg('toggle-thousand-sep',  settings.thousandSeparators);
   tg('toggle-auto-steps',    settings.autoShowSteps);
+  tg('toggle-share-usage',   settings.shareUsageData);
+
+  // Device ID display — show only the first 8 chars + last 4 (UUID-style truncation)
+  const devEl = document.getElementById('device-id-value');
+  if (devEl && DEVICE_ID) {
+    devEl.textContent = DEVICE_ID.slice(0, 8) + '…' + DEVICE_ID.slice(-4);
+    devEl.title = DEVICE_ID;
+  }
 
   // Reflect default detail on the in-page Brief/Normal/Detailed tabs
   document.querySelectorAll('.dt').forEach(b => b.classList.toggle('on',
@@ -4406,6 +5704,88 @@ function recordAiFailure(err) {
 window.addEventListener('online', () => updateConnStatus('online'));
 window.addEventListener('offline', () => updateConnStatus('offline'));
 
+/* "What's next?" — context-aware follow-up actions after a successful calculation.
+   Reads the current expression to figure out what the user is most likely to want
+   next (graph it, factor it, find roots, differentiate, etc.) and renders 2-4 chip
+   buttons. Falls back to a single "Show steps" chip if nothing specific matches. */
+function detectExprContext(expr) {
+  if (!expr) return [];
+  const e = expr.toLowerCase();
+  const ctx = [];
+  const hasX = /\b[a-z]\b/.test(expr.replace(/sin|cos|tan|asin|acos|atan|log|sqrt|cbrt|exp|abs|min|max|mean|std|mod|floor|ceil|round|gcd|lcm|pi/g, ''));
+  const hasEq = /=/.test(e);
+  const isPolynomial = /\^|x\s*\*|\bx\b/.test(e) && !/sin|cos|tan|log|exp|sqrt/.test(e);
+  const hasTrig = /sin|cos|tan/.test(e);
+  const hasIntegral = /∫|integ/.test(e);
+  const hasDeriv = /d\/dx|derivative/.test(e);
+
+  if (hasEq) ctx.push('solve');
+  if (hasX && isPolynomial && hasEq) ctx.push('factor');
+  if (hasX && !hasEq) ctx.push('graph');
+  if (hasX && !hasDeriv) ctx.push('diff');
+  if (hasX && !hasIntegral) ctx.push('integ');
+  if (hasTrig || isPolynomial) ctx.push('similar');
+  return ctx;
+}
+
+function renderWhatsNext() {
+  const wrap = document.getElementById('whats-next');
+  if (!wrap) return;
+  if (!curResult || curResult === 'Error') { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  const ctx = detectExprContext(curExpr);
+
+  // Always-available primary action.
+  // NOTE: use the icon-less label `whatsnext.steps` (not `calc.action.steps`, which
+  // already includes a leading ✦ for the in-page button) so the chip doesn't
+  // double-render the star.
+  const actions = [{ key:'steps', icon:'✦', label:t('whatsnext.steps'), fn:'getSteps()' }];
+
+  if (ctx.includes('graph'))   actions.push({ key:'graph',   icon:'📈', label:t('whatsnext.graph'),   fn:`whatsNextGraph()` });
+  if (ctx.includes('solve'))   actions.push({ key:'solve',   icon:'⊢',  label:t('whatsnext.solve'),   fn:`whatsNextSolver('solve')` });
+  if (ctx.includes('factor'))  actions.push({ key:'factor',  icon:'×',  label:t('whatsnext.factor'),  fn:`whatsNextSolver('factor')` });
+  if (ctx.includes('diff'))    actions.push({ key:'diff',    icon:'∂',  label:t('whatsnext.diff'),    fn:`whatsNextSolver('derivative')` });
+  if (ctx.includes('integ'))   actions.push({ key:'integ',   icon:'∫',  label:t('whatsnext.integ'),   fn:`whatsNextSolver('integral')` });
+  if (ctx.includes('similar')) actions.push({ key:'similar', icon:'🎯', label:t('whatsnext.similar'), fn:`whatsNextPractice()` });
+
+  // Cap at 4 chips so the row doesn't get crowded
+  const top = actions.slice(0, 4);
+  wrap.innerHTML =
+    `<span class="whats-next-label">${escapeHtml(t('whatsnext.label'))}</span>` +
+    top.map(a =>
+      `<button class="whats-next-chip" type="button" onclick="${a.fn}" aria-label="${escapeHtml(a.label)}">` +
+      `<span class="whats-next-icon">${a.icon}</span>${escapeHtml(a.label)}</button>`
+    ).join('');
+  wrap.style.display = 'flex';
+}
+
+function whatsNextGraph() {
+  showPage('graph');
+  setTimeout(() => {
+    if (typeof graphFns !== 'undefined') {
+      graphFns[0] = (curExpr || 'sin(x)').replace(/=.*$/, '').trim();
+      if (typeof renderFnInputs === 'function') renderFnInputs();
+      if (typeof drawGraph === 'function') drawGraph();
+      else if (typeof plotGraph === 'function') plotGraph();
+    }
+  }, 100);
+}
+function whatsNextSolver(type) {
+  showPage('solver');
+  setTimeout(() => {
+    const inp = document.getElementById('solver-input');
+    if (inp && curExpr) inp.value = curExpr;
+    if (typeof setStype === 'function') {
+      const btn = document.querySelector(`.stype[onclick*="'${type}'"]`);
+      if (btn) setStype(type, btn);
+    }
+    setTimeout(() => { if (typeof runSolver === 'function') runSolver(); }, 80);
+  }, 100);
+}
+function whatsNextPractice() {
+  showPage('practice');
+  toast(t('whatsnext.practice.hint'), { variant:'info' });
+}
+
 /* Smart suggestions on the calculator — shown when expression is empty + no result */
 const CALC_SAMPLE_EXPRS = [
   '2x^2 + 3x - 5', 'sqrt(144)', 'sin(π/4)', '5! + log(100)', '∫x^2 dx', 'd/dx(x^3)',
@@ -4437,6 +5817,95 @@ function loadSuggestion(expr) {
   exprEl.dispatchEvent(new Event('input'));
   exprEl.focus();
   renderCalcSuggestions();
+}
+
+/* Daily math fact — pseudo-random by date so all users on the same day see the same fact.
+   24 facts cycle through ~24 days, then loop. Each language has its own pool so translations
+   don't lose nuance. */
+const DAILY_FACT_COUNT = 24;
+function _todaySeed() {
+  const d = new Date();
+  // Days since epoch (UTC), so the fact rotates at midnight UTC
+  return Math.floor(d.getTime() / 86400000);
+}
+function renderDailyFact() {
+  const wrap = document.getElementById('daily-fact');
+  const text = document.getElementById('daily-fact-text');
+  if (!wrap || !text) return;
+  // Hide if user has typed or has history (we already show suggestions/results in that case)
+  const hasExpr = (exprEl?.value || '').trim().length > 0;
+  const hasHist = Array.isArray(history) && history.length > 0;
+  if (hasExpr || hasHist) { wrap.style.display = 'none'; return; }
+  const idx = _todaySeed() % DAILY_FACT_COUNT;
+  const factText = t('daily.fact.' + idx);
+  if (!factText || factText === ('daily.fact.' + idx)) { wrap.style.display = 'none'; return; }
+  text.textContent = factText;
+  wrap.style.display = 'flex';
+}
+
+/* Streak tracker — counts consecutive days with at least one calculation.
+   Stored as { last: 'YYYY-MM-DD', count: N, best: N } in mathix_streak.
+   Bumped on calc(), shown subtly near the gear button when active. */
+function _todayKey() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function _readStreak() {
+  try {
+    const v = JSON.parse(localStorage.getItem('mathix_streak') || 'null');
+    return (v && typeof v === 'object') ? v : { last: null, count: 0, best: 0 };
+  } catch(e) { return { last: null, count: 0, best: 0 }; }
+}
+function _writeStreak(s) {
+  try { localStorage.setItem('mathix_streak', JSON.stringify(s)); } catch(e) {}
+  try { mxSync.pushStreak(s); } catch(e) {}
+}
+
+function bumpStreak() {
+  const s = _readStreak();
+  const today = _todayKey();
+  if (s.last === today) return; // already counted today
+  // Was yesterday? extend; otherwise reset to 1
+  const yest = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  })();
+  s.count = (s.last === yest) ? (s.count + 1) : 1;
+  s.last = today;
+  if (s.count > s.best) s.best = s.count;
+  _writeStreak(s);
+  // Celebrate milestone days subtly
+  if (s.count === 3 || s.count === 7 || s.count === 14 || s.count === 30 || s.count === 100) {
+    setTimeout(() => toast('🔥 ' + t('streak.milestone').replace('{n}', s.count), { variant:'success', dur:4000 }), 800);
+  }
+  renderStreakBadge();
+}
+function renderStreakBadge() {
+  const s = _readStreak();
+  const el = document.getElementById('streak-badge');
+  if (!el) return;
+  const today = _todayKey();
+  const yest = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  })();
+  // Show badge only if streak is active (count > 1 and last is today or yesterday)
+  if (s.count >= 2 && (s.last === today || s.last === yest)) {
+    el.textContent = '🔥 ' + s.count;
+    el.title = t('streak.tooltip').replace('{n}', s.count).replace('{best}', s.best);
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+/* Time-of-day greeting — used in chat welcome and onboarding for a more alive feel */
+function timeGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12)  return t('greet.morning');
+  if (h >= 12 && h < 18) return t('greet.afternoon');
+  if (h >= 18 && h < 23) return t('greet.evening');
+  return t('greet.late');
 }
 
 /* Onboarding — shown once, dismissed forever (or on first user interaction) */
@@ -4479,6 +5948,9 @@ function updateSetting(key, value, allowed) {
   applySettings();
   syncSettingsUI();
   flashSavedIndicator();
+  // Track only the keys that meaningfully shape the experience — never the value of
+  // anything user-content-y (won't happen here since settings keys are enums/booleans).
+  try { track('setting_change', { key, value: typeof value === 'boolean' ? (value ? 1 : 0) : String(value) }); } catch(e) {}
   return true;
 }
 
@@ -4487,6 +5959,7 @@ function setAccent(accent)      { updateSetting('accent', accent, ['purple','blu
 function setReduceMotion(on)    { updateSetting('reduceMotion', !!on); }
 function setCompactMode(on)     { updateSetting('compactMode', !!on); }
 function setFontSize(size)      { updateSetting('fontSize', size, ['small','normal','large']); }
+function setShareUsageData(on)  { updateSetting('shareUsageData', !!on); if (!on) _analyticsBuffer = []; }
 
 function setAngleUnit(unit) {
   if (!updateSetting('angleUnit', unit, ['rad','deg'])) return;
@@ -4650,6 +6123,167 @@ function settingsImportFile(input) {
   reader.readAsText(file);
 }
 
+/* ─── Cross-device sync ───────────────────────────────────────────────────
+   No accounts. The user clicks "Generate sync code" on Device A → server returns a
+   6-digit code that's bound to a one-shot encrypted bundle of {settings, history,
+   practiceStats}. They type the code on Device B and the bundle is fetched + applied.
+   The code expires in 10 minutes server-side. This gives users continuity across
+   devices without forcing a signup flow. Foundation for future real account sync.
+─────────────────────────────────────────────────────────────────────────── */
+const SYNC_BASE = WORKER_URL.replace(/\/api\/ai$/, '/api/sync');
+
+async function settingsGenerateSyncCode() {
+  const btn = document.getElementById('btn-generate-sync');
+  const display = document.getElementById('sync-code-display');
+  if (!btn || !display) return;
+  btn.disabled = true;
+  btn.textContent = '…';
+  display.textContent = '';
+  try {
+    const payload = { settings, history, practiceStats };
+    const resp = await fetch(SYNC_BASE + '/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Device-Id': DEVICE_ID },
+      body: JSON.stringify({ deviceId: DEVICE_ID, payload }),
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (!data.code) throw new Error('No code returned');
+    display.innerHTML = `<span class="sync-code">${data.code}</span><span class="sync-code-hint">${escapeHtml(t('sync.codeExpires'))}</span>`;
+    track('sync_code_generated');
+  } catch(e) {
+    display.textContent = t('sync.error');
+    toast(t('sync.error'), { variant: 'error' });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t('sync.generate');
+  }
+}
+
+async function settingsRedeemSyncCode() {
+  const inp = document.getElementById('sync-code-input');
+  if (!inp) return;
+  const code = (inp.value || '').replace(/\D/g, '').slice(0, 6);
+  if (code.length !== 6) {
+    toast(t('sync.invalidCode'), { variant: 'warn' });
+    inp.focus();
+    return;
+  }
+  if (!(await mxConfirm('confirm.sync.import'))) return;
+  try {
+    const resp = await fetch(SYNC_BASE + '/redeem', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Device-Id': DEVICE_ID },
+      body: JSON.stringify({ code, deviceId: DEVICE_ID }),
+    });
+    if (!resp.ok) {
+      if (resp.status === 404) { toast(t('sync.codeExpired'), { variant: 'error' }); return; }
+      throw new Error('HTTP ' + resp.status);
+    }
+    const data = await resp.json();
+    const p = data.payload;
+    if (!p || typeof p !== 'object') throw new Error('Bad payload');
+    // Merge — language preserved from current device unless target sets one explicitly
+    if (p.settings) {
+      settings = Object.assign({}, SETTINGS_DEFAULTS, p.settings);
+      persistSettings();
+      applySettings();
+    }
+    if (Array.isArray(p.history)) {
+      history = p.history.slice(0, settings.historyLimit || 30);
+      safeSetItem('mathix_hist', JSON.stringify(history));
+      if (typeof renderHist === 'function') renderHist();
+    }
+    if (p.practiceStats && typeof p.practiceStats === 'object') {
+      practiceStats = Object.assign({total:0,correct:0,streak:0,best:0}, p.practiceStats);
+      try { localStorage.setItem('mathix_stats', JSON.stringify(practiceStats)); } catch(_){}
+      if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
+    }
+    syncSettingsUI();
+    inp.value = '';
+    toast(t('sync.imported'), { variant: 'success' });
+    track('sync_code_redeemed');
+  } catch(e) {
+    toast(t('sync.error'), { variant: 'error' });
+  }
+}
+
+/* ─── Account UI ─────────────────────────────────────────────────────────
+   Renders the Account section based on the current auth state.
+   Called from a mxSync.onAuthChange listener so it stays in sync with reality.
+─────────────────────────────────────────────────────────────────────────── */
+function renderAccountSection() {
+  const section = document.getElementById('settings-account-section');
+  if (!section) return;
+  // If Supabase isn't configured, hide the section entirely — there's nothing
+  // useful to show. The Sync-by-code feature still works for those deployments.
+  if (!SUPABASE_ENABLED) { section.style.display = 'none'; return; }
+  section.style.display = '';
+
+  const state = mxSync.getState();
+  const signedOutCard = document.getElementById('account-signed-out');
+  const signedInCard  = document.getElementById('account-signed-in');
+  // "Signed in" means: authenticated AND non-anonymous (i.e. has an email)
+  const isFullySignedIn = !!(state.user && !state.anonymous && state.email);
+  if (signedOutCard) signedOutCard.style.display = isFullySignedIn ? 'none' : '';
+  if (signedInCard)  signedInCard.style.display  = isFullySignedIn ? '' : 'none';
+
+  const emailEl = document.getElementById('account-email');
+  if (emailEl && state.email) emailEl.textContent = state.email;
+}
+
+async function settingsSignIn() {
+  const inp = document.getElementById('signin-email');
+  const btn = document.getElementById('signin-submit-btn');
+  const hint = document.getElementById('signin-hint');
+  if (!inp) return;
+  const email = inp.value.trim();
+  if (!email) { inp.focus(); return; }
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
+  if (hint) hint.textContent = '';
+  try {
+    const res = await mxSync.signInWithEmail(email);
+    if (hint) {
+      hint.textContent = res.linked ? t('account.linkSent') : t('account.magicSent');
+      hint.classList.add('ok');
+    }
+    track('auth_sign_in_requested', { linked: res.linked ? 1 : 0 });
+  } catch (e) {
+    if (hint) {
+      const code = e && e.message;
+      if (code === 'invalid_email') hint.textContent = t('account.invalidEmail');
+      else hint.textContent = t('account.signInError');
+      hint.classList.remove('ok');
+    }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = t('account.sendLink'); }
+  }
+}
+
+async function settingsSignOut() {
+  if (!(await mxConfirm('confirm.signOut'))) return;
+  await mxSync.signOut();
+  toast(t('account.signedOut'), { variant: 'info' });
+  track('auth_sign_out');
+  // mxSync will fall back to anonymous on next init — but only if the user reloads
+  // or comes back later. For now they're just unauth'd and using local data.
+  renderAccountSection();
+}
+
+function settingsCopyDeviceId() {
+  navigator.clipboard?.writeText(DEVICE_ID).then(
+    () => toast(t('toast.copied'), { variant: 'success' }),
+    () => toast(t('toast.copyFail'), { variant: 'error' })
+  );
+}
+
+async function settingsRotateDeviceId() {
+  if (!(await mxConfirm('confirm.rotateDeviceId'))) return;
+  rotateDeviceId();
+  toast(t('privacy.deviceIdRotated'), { variant: 'success', dur: 4000 });
+  setTimeout(() => location.reload(), 700);
+}
+
 async function settingsResetDefaults() {
   if (!(await mxConfirm('confirm.reset', { okKey: 'confirm.reset_short' }))) return;
   // Preserve detected language so reset doesn't yank the user back to English
@@ -4762,6 +6396,19 @@ function showPage(id, btn) {
   if (id === 'practice') initPractice();
   if (id === 'scan') initScan();
   if (id === 'formulas') initFormulas();
+  // Keep mobile bottom nav highlighted in sync with the active page
+  syncMobileNav(id);
+  // Scroll to top so users always see the start of the new page (especially on mobile)
+  try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
+  try { track('page_view', { page: id }); } catch(e) {}
+}
+
+function syncMobileNav(activeId) {
+  const id = activeId || (document.querySelector('.page.active')?.id?.replace(/^page-/, ''));
+  document.querySelectorAll('.mnav-btn').forEach(b => {
+    b.classList.toggle('on', b.dataset.page === id);
+    b.setAttribute('aria-current', b.dataset.page === id ? 'page' : 'false');
+  });
 }
 
 function initScan() {
@@ -4881,10 +6528,42 @@ function sanitize(s) {
     .replace(/([^a-z])e([^a-z(]|$)/g,'$12.718281828$2');
 }
 
+/* True if a string is a usable Algebrite result (not an error, partial parse, or junk).
+   Algebrite emits failures as text containing the substring "Stop:" anywhere — sometimes
+   prefixed with the partial input — so we scan the whole output, not just the start. */
+function _isUsableAlgebriteResult(s, original) {
+  if (!s || typeof s !== 'string') return false;
+  const trimmed = s.trim();
+  if (!trimmed) return false;
+  if (trimmed === original) return false;
+  if (/Stop:/i.test(trimmed))           return false;
+  if (/syntax\s*error/i.test(trimmed))   return false;
+  if (/error/i.test(trimmed) && /\?|undefined/.test(trimmed)) return false;
+  if (trimmed.includes('?'))             return false;  // Algebrite uses ? for unknown
+  return true;
+}
+
+/* True if the expression looks unfinished (ends in an operator or open paren).
+   We use this in liveCalc to suppress the result line entirely while the user is mid-typing,
+   instead of showing a confusing partial output or a parser error. */
+function _looksUnfinished(s) {
+  if (!s) return true;
+  const t = s.trim();
+  if (!t) return true;
+  if (/[+\-*\/×÷^.,(]\s*$/.test(t)) return true;
+  // Unbalanced parens
+  let depth = 0;
+  for (const c of t) { if (c === '(') depth++; else if (c === ')') depth--; if (depth < 0) return true; }
+  if (depth > 0) return true;
+  return false;
+}
+
 function liveCalc() {
   const raw = exprEl.value.trim();
-  if (!raw) { rnumEl.textContent=''; reqEl.style.opacity=0; return; }
+  if (!raw) { rnumEl.textContent=''; reqEl.style.opacity=0; rtagEl.textContent=''; return; }
   if (raw.includes('=')) return;
+  // Don't show garbled partial results while user is mid-typing.
+  if (_looksUnfinished(raw)) { rnumEl.textContent=''; reqEl.style.opacity=0; rtagEl.textContent=''; return; }
 
   // Try math.js first (fast, numeric)
   try {
@@ -4901,7 +6580,7 @@ function liveCalc() {
   try {
     if (typeof Algebrite !== 'undefined') {
       const result = Algebrite.run(raw);
-      if (result && result !== raw && !result.startsWith('Stop')) {
+      if (_isUsableAlgebriteResult(result, raw)) {
         rnumEl.textContent = result;
         reqEl.style.opacity = 1;
         rtagEl.textContent = 'simplified';
@@ -4909,6 +6588,29 @@ function liveCalc() {
       }
     }
   } catch(e) {}
+
+  // Nothing usable yet — clear the result line so we don't show a stale or confusing value.
+  rnumEl.textContent = '';
+  reqEl.style.opacity = 0;
+  rtagEl.textContent = '';
+}
+
+/* Replace plain "1.23e+5" with the typographically pretty "1.23 × 10⁵" form.
+   Uses Unicode superscripts and the proper × multiplication sign. Massive
+   perceived-quality win on any result that hits scientific notation. */
+function _toSuperscript(n) {
+  const map = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'' };
+  return String(n).split('').map(c => map[c] != null ? map[c] : c).join('');
+}
+function _prettyExponential(eStr) {
+  // "1.23e+5" → "1.23 × 10⁵";  "1.234e-7" → "1.234 × 10⁻⁷"
+  const m = /^(-?\d+(?:\.\d+)?)e([+-]?\d+)$/.exec(eStr);
+  if (!m) return eStr;
+  const mantissa = m[1];
+  const exp = parseInt(m[2], 10);
+  // For "1 × 10ⁿ" simplify to just "10ⁿ"
+  if (mantissa === '1') return '10' + _toSuperscript(exp);
+  return mantissa + ' × 10' + _toSuperscript(exp);
 }
 
 function fmt(r) {
@@ -4920,7 +6622,7 @@ function fmt(r) {
     const fmtMode = s.numberFormat || 'auto';
     const useSep = s.thousandSeparators !== false;
     if (fmtMode === 'scientific' && r !== 0) {
-      return r.toExponential(Math.min(decimals, 10));
+      return _prettyExponential(r.toExponential(Math.min(decimals, 10)));
     }
     if (fmtMode === 'fixed') {
       const fixed = r.toFixed(decimals);
@@ -4931,7 +6633,9 @@ function fmt(r) {
     }
     // auto mode (default)
     if (Number.isInteger(r)) return useSep ? r.toLocaleString('en-US') : String(r);
-    if (Math.abs(r)>1e12 || (Math.abs(r)<1e-5 && r!==0)) return r.toExponential(Math.min(4, decimals));
+    if (Math.abs(r)>1e12 || (Math.abs(r)<1e-5 && r!==0)) {
+      return _prettyExponential(r.toExponential(Math.min(4, decimals)));
+    }
     const truncated = parseFloat(r.toFixed(decimals));
     if (!useSep) return String(truncated);
     // Apply separators only to the integer part, preserve trailing decimals as-is
@@ -4954,6 +6658,18 @@ function calc() {
   const raw = exprEl.value.trim();
   if (!raw) return;
 
+  // If the expression is obviously incomplete (ends in operator, unbalanced parens), tell the
+  // user instead of running the parser and getting a low-quality error.
+  if (_looksUnfinished(raw)) {
+    rnumEl.textContent = '';
+    reqEl.style.opacity = 0;
+    rtagEl.textContent = '';
+    exprEl.classList.add('shake');
+    setTimeout(() => exprEl.classList.remove('shake'), 400);
+    toast(t('toast.exprIncomplete'), { variant: 'warn' });
+    return;
+  }
+
   let f = null;
 
   // Try math.js (numeric, fast)
@@ -4967,19 +6683,23 @@ function calc() {
     try {
       if (typeof Algebrite !== 'undefined') {
         const alg = Algebrite.run(raw);
-        if (alg && alg !== raw && !alg.startsWith('Stop')) f = alg;
+        if (_isUsableAlgebriteResult(alg, raw)) f = alg;
       }
     } catch(e) {}
   }
 
   if (f) {
     curExpr = raw; curResult = f;
-    rnumEl.textContent = f;
+    animateResult(rnumEl, f);
     reqEl.style.opacity = 1;
     rnumEl.classList.remove('pop');
     void rnumEl.offsetWidth;
     rnumEl.classList.add('pop');
     addHist(raw, f);
+    bumpStreak();
+    try { renderWhatsNext(); } catch(e) {}
+    try { triggerEasterEgg(raw, f); } catch(e) {}
+    try { track('calc', { len: raw.length, hasVar: /[a-z]/i.test(raw) ? 1 : 0 }); } catch(e) {}
     if (settings && settings.autoShowSteps) {
       // Defer slightly so the result animation lands first
       setTimeout(() => { try { getSteps(); } catch(e){} }, 200);
@@ -4988,10 +6708,63 @@ function calc() {
     }
   } else {
     rnumEl.textContent = 'Error';
+    curResult = ''; // important for renderWhatsNext gating
+    try { renderWhatsNext(); } catch(e) {}
     exprEl.classList.add('shake');
     setTimeout(() => exprEl.classList.remove('shake'), 400);
     toast(t('toast.exprError'), { variant: 'error' });
   }
+}
+
+/* Animated result reveal — count-up for plain integers, smooth fade for everything else.
+   Falls back instantly if Reduce Motion is on. */
+function animateResult(el, value) {
+  if (!el) return;
+  if (settings && settings.reduceMotion) { el.textContent = value; return; }
+  // Try to parse as a plain number for count-up
+  const cleaned = String(value).replace(/[, ]/g, '');
+  const n = parseFloat(cleaned);
+  if (!isFinite(n) || cleaned !== String(n) || Math.abs(n) > 1e9) {
+    el.textContent = value;
+    return;
+  }
+  // Count up over ~450ms with ease-out
+  const start = performance.now();
+  const dur = 450;
+  const isInt = Number.isInteger(n);
+  function tick(now) {
+    const p = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    const v = n * eased;
+    el.textContent = isInt ? Math.round(v).toLocaleString() : (typeof fmt === 'function' ? fmt(v) : v.toFixed(2));
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = value; // snap to formatted value at end
+  }
+  requestAnimationFrame(tick);
+}
+
+/* Easter eggs — tiny celebrations for famous expressions. Subtle, never blocks input. */
+function triggerEasterEgg(raw, result) {
+  if (!raw) return;
+  const r = String(raw).toLowerCase().replace(/\s+/g, '');
+  const res = String(result || '');
+  // Defer so the result animation plays first
+  setTimeout(() => {
+    let key = null;
+    if (r === '42' || res === '42')                                       key = 'egg.42';
+    else if (/^e\^?\(?i\*?pi\)?\+?1$/.test(r) || res === '0' && /e\^.*pi/.test(r)) key = 'egg.euler';
+    else if (/^pi$/.test(r) || /^3\.14159/.test(res))                     key = 'egg.pi';
+    else if (r === '1/0' || res === 'infinity' || res === '∞')           key = 'egg.infinity';
+    else if (r === 'sqrt(-1)' || /imaginary/i.test(res))                  key = 'egg.imaginary';
+    else if (r === 'phi' || res === '1.618033988' || /^1\.61803/.test(res)) key = 'egg.phi';
+    else if (r === '10^100' || /^1e\+?100/.test(res) || r === 'googol')   key = 'egg.googol';
+    else if (/^0\^0$/.test(r))                                            key = 'egg.zerozero';
+    else if (r === '0!' && res === '1')                                   key = 'egg.zerofact';
+    if (key) {
+      const msg = t(key);
+      if (msg && msg !== key) toast(msg, { variant: 'success', dur: 3500 });
+    }
+  }, 600);
 }
 
 /* ═══════════════════════════════════════════════
@@ -5008,7 +6781,7 @@ function setDt(lvl, btn) {
 
 async function getSteps() {
   const expr = exprEl.value.trim() || curExpr;
-  if (!expr) { toast('Enter an expression first!'); return; }
+  if (!expr) { toast(t('toast.enterExprFirst'), { variant: 'warn' }); return; }
 
   let result = curResult;
   if (!result) {
@@ -5016,8 +6789,19 @@ async function getSteps() {
   }
   curExpr = expr; curResult = result;
 
+  // Structured skeleton — 3 step placeholders. Feels like the answer is forming.
   const sb = document.getElementById('steps-body');
-  sb.innerHTML = '<div class="shimmer-block"></div><div class="shimmer-block" style="width:80%"></div><div class="shimmer-block" style="width:90%"></div>';
+  sb.innerHTML = [0,1,2].map(() =>
+    '<div class="step-skeleton">' +
+      '<div class="step-skeleton-n"></div>' +
+      '<div class="step-skeleton-body">' +
+        '<div class="step-skeleton-line medium"></div>' +
+        '<div class="step-skeleton-line short"></div>' +
+      '</div>' +
+    '</div>'
+  ).join('');
+  // Branded "thinking" state on the M logo while AI runs
+  document.querySelector('.logo-mark')?.classList.add('thinking');
 
   const depthMap = {
     brief: {
@@ -5062,8 +6846,13 @@ Format: [{"step":1,"math":"show the math here","explanation":"explain why","rule
       }
     } catch(e) { renderSteps(localSteps(expr,result)); }
   } catch(e) {
-    toast(t('toast.aiOffline'), { variant: 'warn' });
+    if (e && e.code !== 'aborted') {
+      toast(aiErrorMessage(e), { variant: 'warn',
+        action: { label: t('ai.btn.retry'), onClick: () => getSteps() } });
+    }
     renderSteps(localSteps(expr, result));
+  } finally {
+    document.querySelector('.logo-mark')?.classList.remove('thinking');
   }
 }
 
@@ -5147,26 +6936,98 @@ function renderSteps(steps) {
    HISTORY
 ═══════════════════════════════════════════════ */
 function addHist(expr, res) {
-  history.unshift({expr, res, t: Date.now()});
+  const item = { expr, res, t: Date.now() };
+  history.unshift(item);
+  // Best-effort cloud insert — UI doesn't wait. We patch the local item with the
+  // returned id so subsequent pin/delete operations can target the right cloud row.
+  mxSync.addHistoryItem(item).then(id => { if (id) item.id = id; }).catch(() => {});
   const cap = (settings && settings.historyLimit) || 30;
-  while (history.length > cap) history.pop();
+  // Trim — but never drop pinned entries; remove the oldest unpinned one instead
+  while (history.length > cap) {
+    let dropIdx = -1;
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (!history[i].pinned) { dropIdx = i; break; }
+    }
+    if (dropIdx === -1) break; // everything is pinned — let it grow
+    history.splice(dropIdx, 1);
+  }
   safeSetItem('mathix_hist', JSON.stringify(history));
   renderHist();
 }
 function renderHist() {
   const el = document.getElementById('hist-list');
   const exportBtn = document.getElementById('hist-export-btn');
+  const toolbar = document.getElementById('hist-toolbar');
+
   if (!history.length) {
     el.innerHTML = `<div class="hist-empty">${escapeHtml(t('calc.hist.empty'))}</div>`;
     if (exportBtn) exportBtn.style.display = 'none';
+    if (toolbar) toolbar.style.display = 'none';
     return;
   }
-  el.innerHTML = history.map((h, i) => `
-    <div class="hist-item">
+  // Show search bar once history grows past a couple entries — keeps small UIs clean
+  if (toolbar) toolbar.style.display = history.length >= 4 ? 'flex' : 'none';
+
+  // Filter by search query
+  const q = (document.getElementById('hist-search')?.value || '').toLowerCase().trim();
+  const filtered = history
+    .map((h, i) => ({ h, i }))
+    .filter(({ h }) => !q || (h.expr || '').toLowerCase().includes(q) || (h.res + '').toLowerCase().includes(q))
+    // Sort: pinned first (preserving original recency within each group)
+    .sort((a, b) => (b.h.pinned ? 1 : 0) - (a.h.pinned ? 1 : 0));
+
+  if (!filtered.length) {
+    el.innerHTML = `<div class="hist-empty">${escapeHtml(t('hist.noMatch'))}</div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(({ h, i }) => {
+    const pinned = h.pinned ? 'pinned' : '';
+    const pinTitle = h.pinned ? t('hist.unpin') : t('hist.pin');
+    const ago = h.t ? timeAgo(h.t) : '';
+    const tip = (h.t ? new Date(h.t).toLocaleString() + (ago ? ' (' + ago + ')' : '') : '');
+    return `
+    <div class="hist-item ${pinned}" title="${escapeHtml(tip)}">
       <input type="checkbox" class="hist-cb" id="hcb-${i}" onchange="histCheckChange()" onclick="event.stopPropagation()">
       <span class="hist-expr" onclick="loadHist(${i})">${escapeHtml(h.expr)}</span>
-      <span class="hist-res" onclick="loadHist(${i})">${escapeHtml(h.res)}</span>
-    </div>`).join('');
+      <span class="hist-res"  onclick="loadHist(${i})">${escapeHtml(h.res)}</span>
+      <button class="hist-pin ${pinned}" type="button"
+        onclick="event.stopPropagation();toggleHistPin(${i})"
+        title="${escapeHtml(pinTitle)}" aria-label="${escapeHtml(pinTitle)}">${h.pinned ? '★' : '☆'}</button>
+    </div>`;
+  }).join('');
+}
+
+/* Human-readable "X ago" formatter — uses Intl.RelativeTimeFormat in the user's locale */
+function timeAgo(ts) {
+  if (!ts) return '';
+  const lang = (typeof settings === 'object' && settings && settings.language) || 'en';
+  const localeMap = { en:'en-US', es:'es-ES', fr:'fr-FR', de:'de-DE', zh:'zh-CN' };
+  const diffMs = Date.now() - ts;
+  const sec = Math.round(diffMs / 1000);
+  if (sec < 5) return t('time.justNow');
+  let value, unit;
+  if (sec < 60)            { value = -sec;                  unit = 'second'; }
+  else if (sec < 3600)     { value = -Math.round(sec/60);   unit = 'minute'; }
+  else if (sec < 86400)    { value = -Math.round(sec/3600); unit = 'hour';   }
+  else if (sec < 2592000)  { value = -Math.round(sec/86400);unit = 'day';    }
+  else if (sec < 31536000) { value = -Math.round(sec/2592000); unit = 'month'; }
+  else                     { value = -Math.round(sec/31536000); unit = 'year'; }
+  try {
+    const rtf = new Intl.RelativeTimeFormat(localeMap[lang] || 'en-US', { numeric: 'auto' });
+    return rtf.format(value, unit);
+  } catch(e) {
+    return value + ' ' + unit + 's ago';
+  }
+}
+
+function toggleHistPin(i) {
+  if (!history[i]) return;
+  history[i].pinned = !history[i].pinned;
+  safeSetItem('mathix_hist', JSON.stringify(history));
+  renderHist();
+  // Mirror to cloud — only effective if the item has a known cloud id (newer items do)
+  if (history[i].id) mxSync.updateHistoryPin(history[i].id, history[i].pinned);
 }
 
 function histCheckChange() {
@@ -5259,7 +7120,12 @@ function exportHistPDF() {
 }
 
 function loadHist(i) { if (!history[i]) return; exprEl.value=history[i].expr; curExpr=history[i].expr; curResult=history[i].res; rnumEl.textContent=history[i].res; reqEl.style.opacity=1; exprEl.focus(); }
-function clearHist() { history=[]; try { localStorage.removeItem('mathix_hist'); } catch(e) {} renderHist(); }
+function clearHist() {
+  history = [];
+  try { localStorage.removeItem('mathix_hist'); } catch(e) {}
+  renderHist();
+  mxSync.clearHistory();
+}
 renderHist();
 
 /* ═══════════════════════════════════════════════
@@ -6682,10 +8548,30 @@ document.addEventListener('DOMContentLoaded', () => {
   try { syncSettingsUI(); } catch(e) {}
   try { updateConnStatus(navigator.onLine ? 'online' : 'offline'); } catch(e) {}
   try { maybeShowOnboard(); } catch(e) {}
-  try { renderCalcSuggestions(); } catch(e) {}
-  // Hide suggestions as soon as user types
+  // Initialize Supabase (anonymous sign-in + hydration). Non-blocking — UI is
+  // already rendered from localStorage. When hydration lands, hooks re-render.
   try {
-    exprEl?.addEventListener('input', () => { try { renderCalcSuggestions(); } catch(e){} });
+    mxSync.onAuthChange(() => { try { renderAccountSection(); } catch(e){} });
+    mxSync.init();
+  } catch(e) {}
+  try { renderStreakBadge(); } catch(e) {}
+  try { renderCalcSuggestions(); } catch(e) {}
+  try { renderDailyFact(); } catch(e) {}
+  try { syncMobileNav(); } catch(e) {}
+  // Time-aware chat welcome — replace the bubble with a localized greeting
+  try {
+    const bubble = document.querySelector('#chat-msgs .chat-msg.ai .bubble');
+    if (bubble && !bubble.dataset.greeted) {
+      bubble.textContent = timeGreeting() + ' ' + t('calc.chat.welcome');
+      bubble.dataset.greeted = '1';
+    }
+  } catch(e) {}
+  // Hide suggestions / daily fact as soon as user types
+  try {
+    exprEl?.addEventListener('input', () => {
+      try { renderCalcSuggestions(); } catch(e){}
+      try { renderDailyFact();      } catch(e){}
+    });
   } catch(e) {}
   // Mobile keyboard: scroll input into view above the soft keyboard
   ['#expr','#solver-input','#ci','#quiz-input','.flib-search'].forEach(sel => {
@@ -6958,7 +8844,7 @@ If nothing mathematical found, return: []`;
   try {
     const resp = await fetch('https://mathixai.salmane0313.workers.dev/api/vision', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Device-Id': DEVICE_ID },
       body: JSON.stringify({ image: base64, mimeType, prompt, turnstileToken: '' })
     });
     if (!resp.ok) throw new Error('Vision API error ' + resp.status);
@@ -7324,6 +9210,7 @@ function checkAnswer() {
 
   practiceStats.total++;
   try { localStorage.setItem('mathix_stats', JSON.stringify(practiceStats)); } catch(e) {}
+  try { mxSync.pushStats(); } catch(e) {}
   updateStatsDisplay();
 
   document.getElementById('quiz-actions').style.display = 'flex';
@@ -7393,6 +9280,15 @@ function showSessionComplete() {
   const correct = practiceSession.filter((_,i) => i < total).length; // approx
   const score = practiceStats.correct;
   const pct = Math.round(practiceStats.correct / practiceStats.total * 100);
+
+  // Persist the session row (one row per completed quiz — feeds adaptive difficulty)
+  try {
+    mxSync.addPracticeSession({
+      topic: practiceTopic, difficulty: practiceDiff,
+      total, correct, durationMs: null,
+    });
+    track('practice_session_complete', { topic: practiceTopic, difficulty: practiceDiff, total, correct });
+  } catch(e) {}
 
   document.getElementById('complete-score').textContent = pct + '%';
   document.getElementById('complete-title').textContent =

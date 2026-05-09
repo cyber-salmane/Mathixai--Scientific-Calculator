@@ -6,7 +6,7 @@
  * - Handles share_target POSTs and forwards them to the scanner page
  */
 
-const CACHE_NAME = 'mathix-v12';
+const CACHE_NAME = 'mathix-v16';
 
 // App shell (must succeed for install to succeed)
 const CORE_URLS = [
