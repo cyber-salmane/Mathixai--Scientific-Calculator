@@ -3472,6 +3472,7 @@ const I18N = {
     'sync.error':'Sync failed — check your connection',
     'confirm.sync.import':'Sign in as the source device on this device?\n\nYou\'ll see the source device\'s history, settings, and stats. New calculations on either device will sync continuously. Your current data on this device will no longer be visible unless you sign back in.',
     'sync.notSignedIn':'Could not access your session. Try refreshing the page.',
+    'sync.sourceSessionInvalid':'This code is no longer valid — the source device has signed out. Please generate a fresh code on the source device.',
     'sync.notConfigured':'Sync is not available in this build.',
     'settings.section.privacy':'Privacy',
     'settings.section.privacy.desc':'Mathix collects anonymous usage data — page views, feature counts, error rates — to improve the app. Never your math expressions, never personal info.',
@@ -3688,6 +3689,7 @@ const I18N = {
     'sync.error':'Falló la sincronización — comprueba tu conexión',
     'confirm.sync.import':'¿Iniciar sesión como el dispositivo origen?\n\nVerás el historial, ajustes y estadísticas del dispositivo origen. Los nuevos cálculos en cualquiera de los dos dispositivos se sincronizarán continuamente. Los datos actuales de este dispositivo dejarán de ser visibles a menos que vuelvas a iniciar sesión.',
     'sync.notSignedIn':'No se pudo acceder a tu sesión. Recarga la página.',
+    'sync.sourceSessionInvalid':'Este código ya no es válido — el dispositivo origen cerró sesión. Genera un código nuevo desde el dispositivo origen.',
     'sync.notConfigured':'La sincronización no está disponible en esta versión.',
     'settings.section.privacy':'Privacidad',
     'settings.section.privacy.desc':'Mathix recopila datos de uso anónimos — visitas, conteos de funciones, tasas de error — para mejorar la app. Nunca tus expresiones, nunca info personal.',
@@ -3878,6 +3880,7 @@ const I18N = {
     'sync.error':'Échec de la synchronisation — vérifiez votre connexion',
     'confirm.sync.import':"Se connecter en tant que l'appareil source sur cet appareil ?\n\nVous verrez l'historique, les paramètres et les statistiques de l'appareil source. Les nouveaux calculs sur l'un ou l'autre appareil seront synchronisés en continu. Vos données actuelles ne seront plus visibles ici à moins de vous reconnecter.",
     'sync.notSignedIn':"Impossible d'accéder à votre session. Rechargez la page.",
+    'sync.sourceSessionInvalid':"Ce code n'est plus valide — l'appareil source s'est déconnecté. Générez un nouveau code depuis l'appareil source.",
     'sync.notConfigured':'La synchronisation n\'est pas disponible dans cette version.',
     'settings.section.privacy':'Confidentialité',
     'settings.section.privacy.desc':"Mathix collecte des données d'utilisation anonymes — visites, compteurs de fonctionnalités, taux d'erreur — pour améliorer l'app. Jamais vos expressions, jamais d'infos personnelles.",
@@ -4067,6 +4070,7 @@ const I18N = {
     'sync.error':'Sync fehlgeschlagen — Verbindung prüfen',
     'confirm.sync.import':'Auf diesem Gerät als Quellgerät anmelden?\n\nDu siehst Verlauf, Einstellungen und Statistik des Quellgeräts. Neue Berechnungen auf einem der Geräte werden fortlaufend synchronisiert. Deine aktuellen Daten hier sind nicht mehr sichtbar, bis du dich wieder anmeldest.',
     'sync.notSignedIn':'Sitzung nicht verfügbar. Lade die Seite neu.',
+    'sync.sourceSessionInvalid':'Dieser Code ist nicht mehr gültig — das Quellgerät hat sich abgemeldet. Erzeuge auf dem Quellgerät einen neuen Code.',
     'sync.notConfigured':'Sync ist in diesem Build nicht verfügbar.',
     'settings.section.privacy':'Datenschutz',
     'settings.section.privacy.desc':'Mathix sammelt anonyme Nutzungsdaten — Seitenaufrufe, Feature-Zähler, Fehlerraten — um die App zu verbessern. Niemals deine Ausdrücke, niemals persönliche Daten.',
@@ -4256,6 +4260,7 @@ const I18N = {
     'sync.error':'同步失败——请检查网络',
     'confirm.sync.import':'在此设备上以源设备的身份登录？\n\n你将看到源设备的历史、设置和统计。任何一台设备上的新计算都会持续同步。在此设备上的当前数据将不再可见，除非你重新登录。',
     'sync.notSignedIn':'无法访问会话，请刷新页面。',
+    'sync.sourceSessionInvalid':'此代码已失效——源设备已退出登录。请在源设备上生成新的代码。',
     'sync.notConfigured':'此版本不支持同步。',
     'settings.section.privacy':'隐私',
     'settings.section.privacy.desc':'Mathix 收集匿名使用数据——页面访问、功能计数、错误率——以改进应用。不会收集你的数学表达式，不会收集个人信息。',
@@ -4978,7 +4983,33 @@ const mxSync = (function() {
         if (_user) _log('restored session', _user.id, _user.is_anonymous ? 'anon' : _user.email);
       } catch(e) { _log('getSession failed', e?.message); }
 
-      // 2. If no session, try anonymous sign-in (silently).
+      // 1b. Validate the restored session is actually live server-side.
+      // Past bug-pattern (visible in auth logs): the SDK persists tokens whose
+      // server-side session row was destroyed by a /logout. The SDK happily
+      // reuses them, every /user call returns 403 "session_id … doesn't exist",
+      // and the page is stuck calling /signup over and over without the new
+      // anonymous user ever taking effect. We probe getUser() once on boot to
+      // detect this and force-clear if the session is dead.
+      if (_user) {
+        try {
+          const probe = await _client.auth.getUser();
+          if (probe?.error || !probe?.data?.user) {
+            _log('restored session is dead server-side — clearing', probe?.error?.message);
+            try { await _client.auth.signOut(); } catch(_) {}
+            // Belt-and-braces wipe of any stale Supabase storage keys
+            try {
+              for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (!k) continue;
+                if (k === 'mathix_sb_auth' || k.startsWith('sb-')) localStorage.removeItem(k);
+              }
+            } catch(_) {}
+            _user = null;
+          }
+        } catch(e) { _log('session probe threw — assuming valid', e?.message); }
+      }
+
+      // 2. If no session (or the probe killed a stale one), sign in anonymously.
       if (!_user) {
         try {
           const { data, error } = await _client.auth.signInAnonymously();
@@ -5435,6 +5466,40 @@ const mxSync = (function() {
     _user = null;
     _stopRealtime();
     _emit(getState());
+
+    // Belt-and-braces: clear any stale Supabase session state from localStorage.
+    // The SDK normally does this on signOut, but past bugs/aborted signOuts can
+    // leave stale {access_token, refresh_token, session_id} behind that the SDK
+    // would re-pick up next page load and use to call /user — which 403s because
+    // the session row is gone server-side. This loops forever (see auth logs).
+    try {
+      // The storageKey configured in createClient is 'mathix_sb_auth' but the SDK
+      // also writes auxiliary keys (refresh-token, etc.) prefixed with 'sb-'.
+      // Wipe anything matching either to be safe.
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k === 'mathix_sb_auth' || k.startsWith('sb-')) localStorage.removeItem(k);
+      }
+    } catch(e) {}
+
+    // Never leave the device in an unauthenticated state. We immediately
+    // re-establish an anonymous session so generate-sync-code, calculation
+    // history, settings sync etc. all keep working without requiring the user
+    // to refresh the page. This is the architectural intent: "anonymous-by-default,
+    // can upgrade to email later."
+    try {
+      const { data, error } = await _client.auth.signInAnonymously();
+      if (error) { _log('post-signout anon sign-in failed', error.message); return; }
+      if (data && data.user) {
+        _user = data.user;
+        _emit(getState());
+        // The SIGNED_IN event from onAuthStateChange will also fire and queue a
+        // hydrate, but kick one off here too so the new user's empty state is
+        // applied promptly without waiting on the listener race.
+        try { await requestHydrate(); } catch(_) {}
+      }
+    } catch(e) { _log('post-signout anon sign-in threw', e?.message); }
   }
 
   return {
@@ -6159,14 +6224,38 @@ async function settingsGenerateSyncCode() {
     // remained on its own separate user.
     const sb = await getSupabase();
     if (!sb) throw new Error('not_configured');
-    const { data: { session } } = await sb.auth.getSession();
+
+    // Self-heal: after a recent signOut, getSession() returns null until the next
+    // page load. Rather than failing hard with "no session", attempt an anonymous
+    // sign-in once on demand so the user can generate a code immediately without
+    // having to refresh the tab.
+    let session = (await sb.auth.getSession())?.data?.session;
     if (!session || !session.access_token || !session.refresh_token) {
-      // Without a session there is nothing to transfer. The app initializes an
-      // anonymous user on launch, so this should be rare — but if anonymous
-      // sign-in is disabled in the dashboard, we surface a clear error instead
-      // of silently sending an empty payload.
+      try {
+        const { data, error } = await sb.auth.signInAnonymously();
+        if (!error && data?.session) session = data.session;
+      } catch(e) {}
+    }
+    if (!session || !session.access_token || !session.refresh_token) {
       throw new Error('no_session');
     }
+
+    // Optional liveness probe: the access token might be a leftover from a
+    // killed session. A quick getUser() call confirms the session is live before
+    // we hand its tokens to another device. If the probe fails, force a fresh
+    // anon sign-in so we ship valid tokens.
+    try {
+      const probe = await sb.auth.getUser();
+      if (probe?.error || !probe?.data?.user) {
+        try { await sb.auth.signOut(); } catch(_) {}
+        const { data, error } = await sb.auth.signInAnonymously();
+        if (!error && data?.session) session = data.session;
+      }
+    } catch(_) {}
+    if (!session?.access_token || !session?.refresh_token) {
+      throw new Error('no_session');
+    }
+
     const payload = {
       v: 2,
       tokens: {
@@ -6233,17 +6322,29 @@ async function settingsRedeemSyncCode() {
       const sb = await getSupabase();
       if (!sb) throw new Error('not_configured');
 
-      // Preserve the user's PER-DEVICE preferences (language, theme, accent,
-      // text size, etc.) — if they're using French on this phone they don't
-      // suddenly want the source device's English. Synced/account-level state
-      // (history, practice stats, streak) belongs to the user, not the device.
+      // Preserve per-device preferences (language, theme, accent, text size,
+      // etc.) — they belong to the device, not the account, and shouldn't be
+      // clobbered by the source device's choices.
       const PER_DEVICE_KEYS = ['language','theme','accent','fontSize','reduceMotion','compactMode','startTab'];
       const preserved = {};
       for (const k of PER_DEVICE_KEYS) preserved[k] = settings[k];
 
-      // Clear any local data that's about to be replaced by the source user's
-      // cloud data, so hydrate's "is local empty?" check doesn't accidentally
-      // upload our old local data into the source user's account.
+      // Snapshot the CURRENT session so we can restore the device cleanly if the
+      // source's tokens turn out to be revoked (which happens if the source
+      // device signed out between generating the code and us redeeming it).
+      let priorSession = null;
+      try { priorSession = (await sb.auth.getSession())?.data?.session || null; } catch(_) {}
+
+      // Snapshot the local data we're about to clear so we can restore it on rollback.
+      const priorHistory = history.slice();
+      const priorStats   = Object.assign({}, practiceStats);
+      const priorHistRaw = localStorage.getItem('mathix_hist');
+      const priorStatsRaw = localStorage.getItem('mathix_stats');
+      const priorStreakRaw = localStorage.getItem('mathix_streak');
+
+      // Clear local data that's about to be replaced by the source user's cloud data,
+      // so hydrate's "is local empty?" check doesn't accidentally upload our old data
+      // into the source user's account.
       history = [];
       practiceStats = { total:0, correct:0, streak:0, best:0 };
       try {
@@ -6252,18 +6353,64 @@ async function settingsRedeemSyncCode() {
         localStorage.removeItem('mathix_streak');
       } catch(_) {}
 
-      // Switch identity. setSession persists the new tokens via the SDK's
-      // configured storage, and emits SIGNED_IN. Our onAuthStateChange handler
-      // detects the user-id change and queues a hydrate, but we also call it
-      // explicitly here so the success toast fires AFTER the data lands.
-      const { error } = await sb.auth.setSession({
-        access_token:  p.tokens.access_token,
-        refresh_token: p.tokens.refresh_token,
-      });
-      if (error) throw error;
+      // Switch identity. setSession persists tokens AND emits SIGNED_IN.
+      let setSessionError = null;
+      try {
+        const { error } = await sb.auth.setSession({
+          access_token:  p.tokens.access_token,
+          refresh_token: p.tokens.refresh_token,
+        });
+        if (error) setSessionError = error;
+      } catch(e) { setSessionError = e; }
 
-      // Re-apply per-device prefs (the cloud hydrate might also push down the
-      // source user's settings — that's fine, but per-device prefs win locally).
+      // Liveness probe: confirm the new session is actually accepted server-side.
+      // If the source device signed out between generation and our redemption,
+      // the tokens look valid but the session row is gone, and any RLS request
+      // will 403 forever. Detect that NOW so we can roll back.
+      if (!setSessionError) {
+        try {
+          const probe = await sb.auth.getUser();
+          if (probe?.error || !probe?.data?.user) setSessionError = probe?.error || new Error('session probe failed');
+        } catch(e) { setSessionError = e; }
+      }
+
+      if (setSessionError) {
+        // Roll back: restore the device's previous session + data so it isn't
+        // left in a half-broken state. The KV entry has already been consumed
+        // (one-shot delete on /redeem), but at least the device keeps working.
+        try { await sb.auth.signOut(); } catch(_) {}
+        if (priorSession?.refresh_token) {
+          try {
+            await sb.auth.setSession({
+              access_token:  priorSession.access_token,
+              refresh_token: priorSession.refresh_token,
+            });
+          } catch(_) {
+            // Prior session is also dead — fall back to a fresh anonymous user
+            try { await sb.auth.signInAnonymously(); } catch(__) {}
+          }
+        } else {
+          try { await sb.auth.signInAnonymously(); } catch(_) {}
+        }
+        // Restore local data
+        history = priorHistory;
+        practiceStats = priorStats;
+        try {
+          if (priorHistRaw   != null) localStorage.setItem('mathix_hist',   priorHistRaw);
+          if (priorStatsRaw  != null) localStorage.setItem('mathix_stats',  priorStatsRaw);
+          if (priorStreakRaw != null) localStorage.setItem('mathix_streak', priorStreakRaw);
+        } catch(_) {}
+        if (typeof renderHist === 'function') renderHist();
+        if (typeof updateStatsDisplay === 'function') updateStatsDisplay();
+        // Tell the user clearly: the code itself reached us, but the session it
+        // pointed at is no longer alive (source device signed out). They need a
+        // fresh code from the source device.
+        toast(t('sync.sourceSessionInvalid'), { variant: 'error', dur: 5500 });
+        track('sync_code_redeem_failed', { reason: 'invalid_session' });
+        return;
+      }
+
+      // Re-apply per-device prefs after the identity switch.
       for (const k of PER_DEVICE_KEYS) {
         if (preserved[k] != null) settings[k] = preserved[k];
       }
