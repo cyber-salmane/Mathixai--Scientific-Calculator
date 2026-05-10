@@ -5182,14 +5182,28 @@ const mxSync = (function() {
         } catch(e) {}
       }
 
-      // Bind the device row to this user (best-effort; not part of migration gate)
+      // Bind the device row to this user (best-effort; not part of migration gate).
+      // We avoid `upsert()` here: ON CONFLICT DO UPDATE forces PG to evaluate the
+      // SELECT policy against the *existing* row, which fails when the row was
+      // previously bound to another user (anon → email link, sync transfer).
+      // Two-step UPDATE-then-INSERT works under our RLS because UPDATE has
+      // USING=true and WITH CHECK = (auth.uid() = user_id).
       try {
-        await _client.from('devices').upsert({
-          device_id: DEVICE_ID,
-          user_id: uid,
-          user_agent: (navigator.userAgent || '').slice(0, 500),
-          last_seen_at: new Date().toISOString(),
-        });
+        const ua = (navigator.userAgent || '').slice(0, 500);
+        const now = new Date().toISOString();
+        const { data: upd, error: updErr } = await _client
+          .from('devices')
+          .update({ user_id: uid, user_agent: ua, last_seen_at: now })
+          .eq('device_id', DEVICE_ID)
+          .select('device_id');
+        if (!updErr && (!upd || upd.length === 0)) {
+          await _client.from('devices').insert({
+            device_id: DEVICE_ID,
+            user_id: uid,
+            user_agent: ua,
+            last_seen_at: now,
+          });
+        }
       } catch(e) {}
 
       // Only flag migration as done when all required pushes succeeded —
