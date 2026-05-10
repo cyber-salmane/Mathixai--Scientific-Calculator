@@ -3608,6 +3608,7 @@ const I18N = {
     'toast.aiOffline':'Could not connect to AI — showing local steps',
     'toast.solverError':'Could not solve — ',
     'toast.copied':'✓ Copied to clipboard','toast.linkCopied':'✓ Share link copied to clipboard',
+    'toast.updateReady':'A new version of Mathix is available.','toast.reload':'Reload',
     'toast.formulaLoadedCalc':'✓ Formula loaded into calculator','toast.formulaLoadedSolver':'✓ Formula loaded into solver','toast.formulaLoadedGraph':'✓ Formula loaded into graph',
     'toast.savedHist':'Storage full — could not save','toast.histCleared':'✓ History cleared','toast.statsCleared':'✓ Practice stats cleared','toast.allCleared':'✓ All data cleared',
     'toast.angleDeg':'✓ Trig functions now use degrees','toast.angleRad':'✓ Trig functions now use radians',
@@ -3807,6 +3808,7 @@ const I18N = {
     'toast.aiOffline':'No se pudo conectar con la IA — mostrando pasos locales',
     'toast.solverError':'No se pudo resolver — ',
     'toast.copied':'✓ Copiado al portapapeles','toast.linkCopied':'✓ Enlace copiado al portapapeles',
+    'toast.updateReady':'Hay una nueva versión de Mathix disponible.','toast.reload':'Recargar',
     'toast.formulaLoadedCalc':'✓ Fórmula cargada en la calculadora','toast.formulaLoadedSolver':'✓ Fórmula cargada en el resolutor','toast.formulaLoadedGraph':'✓ Fórmula cargada en la gráfica',
     'toast.savedHist':'Almacenamiento lleno — no se pudo guardar','toast.histCleared':'✓ Historial borrado','toast.statsCleared':'✓ Estadísticas borradas','toast.allCleared':'✓ Todos los datos borrados',
     'toast.angleDeg':'✓ Las funciones trigonométricas usan grados','toast.angleRad':'✓ Las funciones trigonométricas usan radianes',
@@ -3999,6 +4001,7 @@ const I18N = {
     'toast.aiOffline':'Connexion IA impossible — étapes locales affichées',
     'toast.solverError':'Échec de la résolution — ',
     'toast.copied':'✓ Copié dans le presse-papiers','toast.linkCopied':'✓ Lien copié dans le presse-papiers',
+    'toast.updateReady':'Une nouvelle version de Mathix est disponible.','toast.reload':'Recharger',
     'toast.formulaLoadedCalc':'✓ Formule chargée dans la calculatrice','toast.formulaLoadedSolver':'✓ Formule chargée dans le solveur','toast.formulaLoadedGraph':'✓ Formule chargée dans le graphique',
     'toast.savedHist':'Stockage plein — sauvegarde impossible','toast.histCleared':'✓ Historique effacé','toast.statsCleared':'✓ Statistiques effacées','toast.allCleared':'✓ Toutes les données effacées',
     'toast.angleDeg':'✓ Les fonctions trigonométriques utilisent les degrés','toast.angleRad':'✓ Les fonctions trigonométriques utilisent les radians',
@@ -4191,6 +4194,7 @@ const I18N = {
     'toast.aiOffline':'Keine KI-Verbindung — lokale Schritte',
     'toast.solverError':'Lösen fehlgeschlagen — ',
     'toast.copied':'✓ In Zwischenablage kopiert','toast.linkCopied':'✓ Link in Zwischenablage kopiert',
+    'toast.updateReady':'Eine neue Version von Mathix ist verfügbar.','toast.reload':'Neu laden',
     'toast.formulaLoadedCalc':'✓ Formel im Rechner geladen','toast.formulaLoadedSolver':'✓ Formel im Löser geladen','toast.formulaLoadedGraph':'✓ Formel im Diagramm geladen',
     'toast.savedHist':'Speicher voll — konnte nicht speichern','toast.histCleared':'✓ Verlauf gelöscht','toast.statsCleared':'✓ Statistik gelöscht','toast.allCleared':'✓ Alle Daten gelöscht',
     'toast.angleDeg':'✓ Trig-Funktionen nutzen Grad','toast.angleRad':'✓ Trig-Funktionen nutzen Bogenmaß',
@@ -4383,6 +4387,7 @@ const I18N = {
     'toast.aiOffline':'无法连接 AI——显示本地步骤',
     'toast.solverError':'求解失败——',
     'toast.copied':'✓ 已复制到剪贴板','toast.linkCopied':'✓ 分享链接已复制',
+    'toast.updateReady':'Mathix 有新版本可用。','toast.reload':'重新加载',
     'toast.formulaLoadedCalc':'✓ 公式已加载到计算器','toast.formulaLoadedSolver':'✓ 公式已加载到求解器','toast.formulaLoadedGraph':'✓ 公式已加载到绘图',
     'toast.savedHist':'存储已满——无法保存','toast.histCleared':'✓ 历史已清除','toast.statsCleared':'✓ 统计已清除','toast.allCleared':'✓ 所有数据已清除',
     'toast.angleDeg':'✓ 三角函数现使用角度','toast.angleRad':'✓ 三角函数现使用弧度',
@@ -5060,57 +5065,82 @@ const mxSync = (function() {
     return hydrate();
   }
 
-  /** Pull all user data from Supabase into localStorage; trigger UI refresh. */
+  /** Race a promise against a timeout. Resolves to {ok, value, error} so the
+   *  caller can branch per-table without try/catch noise. */
+  function _raceTimeout(p, ms, label) {
+    let timer;
+    const timeout = new Promise((_, rej) => {
+      timer = setTimeout(() => rej(new Error('timeout:' + label)), ms);
+    });
+    return Promise.race([p, timeout])
+      .then(v => ({ ok: !v?.error, value: v, error: v?.error || null }))
+      .catch(e => ({ ok: false, value: null, error: e }))
+      .finally(() => clearTimeout(timer));
+  }
+  // Per-fetch timeout. Tuned to be generous (slow mobile) but not block boot.
+  const HYDRATE_FETCH_TIMEOUT_MS = 10000;
+
+  /** Pull all user data from Supabase into localStorage; trigger UI refresh.
+   *  Partial-failure tolerant: each table is applied independently, and
+   *  realtime subscription always starts so live updates can repair gaps.
+   *  The migration-flag is only set when ALL tables fully succeeded — a
+   *  partial hydrate must retry on the next load. */
   async function hydrate() {
     if (!_client || !_user) return;
     if (_hydrating) { _hydrateRequested = true; return; }
     _hydrating = true;
+    let uid = _user.id;
     try {
-      const uid = _user.id;
       _log('hydrate start', uid);
-      const [historyRes, settingsRes, statsRes, streakRes] = await Promise.all([
-        _client.from('history_items').select('*').order('created_at', { ascending: false }).limit(500),
-        _client.from('user_settings').select('data').eq('user_id', uid).maybeSingle(),
-        _client.from('practice_stats').select('*').eq('user_id', uid).maybeSingle(),
-        _client.from('daily_streaks').select('*').eq('user_id', uid).maybeSingle(),
+      const [historyR, settingsR, statsR, streakR] = await Promise.all([
+        _raceTimeout(_client.from('history_items').select('*').order('created_at', { ascending: false }).limit(500), HYDRATE_FETCH_TIMEOUT_MS, 'history'),
+        _raceTimeout(_client.from('user_settings').select('data').eq('user_id', uid).maybeSingle(),                  HYDRATE_FETCH_TIMEOUT_MS, 'settings'),
+        _raceTimeout(_client.from('practice_stats').select('*').eq('user_id', uid).maybeSingle(),                    HYDRATE_FETCH_TIMEOUT_MS, 'stats'),
+        _raceTimeout(_client.from('daily_streaks').select('*').eq('user_id', uid).maybeSingle(),                     HYDRATE_FETCH_TIMEOUT_MS, 'streak'),
       ]);
 
-      // If hydrate failed for ANY entity, surface the error and bail without
-      // touching local state. Prevents a partial-hydrate from corrupting local data.
-      const fetchErr = historyRes.error || settingsRes.error || statsRes.error || streakRes.error;
-      if (fetchErr) {
-        _log('hydrate fetch error', fetchErr.message);
-        return;
-      }
+      // Log every per-table failure but never abort the whole hydrate.
+      // A table that errored just leaves local state untouched for that entity;
+      // realtime + the next hydrate cycle will reconcile.
+      if (!historyR.ok)  _log('history hydrate failed',  historyR.error?.message  || historyR.error);
+      if (!settingsR.ok) _log('settings hydrate failed', settingsR.error?.message || settingsR.error);
+      if (!statsR.ok)    _log('stats hydrate failed',    statsR.error?.message    || statsR.error);
+      if (!streakR.ok)   _log('streak hydrate failed',   streakR.error?.message   || streakR.error);
 
-      const cloudHistory  = historyRes.data || [];
-      const cloudSettings = settingsRes.data?.data || null;
-      const cloudStats    = statsRes.data || null;
-      const cloudStreak   = streakRes.data || null;
+      const cloudHistory  = historyR.ok  ? (historyR.value.data || []) : null;
+      const cloudSettings = settingsR.ok ? (settingsR.value.data?.data || null) : undefined;
+      const cloudStats    = statsR.ok    ? (statsR.value.data || null) : undefined;
+      const cloudStreak   = streakR.ok   ? (streakR.value.data || null) : undefined;
 
       const migratedKey = 'mathix_migrated_to_supabase_' + uid;
       const alreadyMigrated = localStorage.getItem(migratedKey) === '1';
-      // Track per-entity migration success — only flag the user as migrated when
-      // EVERY entity that needed migrating succeeded. Prevents the bug where one
-      // failed insert silently locks us out of retrying on next load.
-      let allMigrationsOk = true;
+      // Track per-entity migration success. Begin pessimistic: any table that
+      // failed to fetch counts as "not OK" so the migration flag isn't set.
+      let allMigrationsOk = historyR.ok && settingsR.ok && statsR.ok && streakR.ok;
 
       // ── HISTORY ──
-      if (cloudHistory.length === 0 && !alreadyMigrated && Array.isArray(history) && history.length) {
-        const ok = await _migrateHistoryUp(uid);
-        if (!ok) allMigrationsOk = false;
-      } else if (cloudHistory.length > 0) {
-        const merged = cloudHistory.map(h => ({
-          id: h.id, expr: h.expr, res: h.result,
-          t: new Date(h.created_at).getTime(), pinned: !!h.pinned,
-        }));
-        history = merged;
-        try { localStorage.setItem('mathix_hist', JSON.stringify(history)); } catch(e) {}
-        if (typeof renderHist === 'function') renderHist();
+      // Only act when the fetch succeeded (cloudHistory !== null). On fetch
+      // failure we leave local history untouched and skip the upload path,
+      // since "cloud is empty" can't be distinguished from "couldn't read it".
+      if (cloudHistory !== null) {
+        if (cloudHistory.length === 0 && !alreadyMigrated && Array.isArray(history) && history.length) {
+          const ok = await _migrateHistoryUp(uid);
+          if (!ok) allMigrationsOk = false;
+        } else if (cloudHistory.length > 0) {
+          const merged = cloudHistory.map(h => ({
+            id: h.id, expr: h.expr, res: h.result,
+            t: new Date(h.created_at).getTime(), pinned: !!h.pinned,
+          }));
+          history = merged;
+          try { localStorage.setItem('mathix_hist', JSON.stringify(history)); } catch(e) {}
+          if (typeof renderHist === 'function') renderHist();
+        }
       }
 
-      // ── SETTINGS ──
-      if (cloudSettings && typeof cloudSettings === 'object') {
+      // ── SETTINGS ── (cloudSettings === undefined means fetch failed)
+      if (cloudSettings === undefined) {
+        // skip — preserve local state, retry on next hydrate
+      } else if (cloudSettings && typeof cloudSettings === 'object') {
         const merged = Object.assign({}, SETTINGS_DEFAULTS, cloudSettings);
         // Only re-apply if something actually changed — avoids needless re-render churn
         const before = JSON.stringify(settings);
@@ -5129,8 +5159,10 @@ const mxSync = (function() {
         if (error) { _log('settings migrate err', error.message); allMigrationsOk = false; }
       }
 
-      // ── PRACTICE STATS ──
-      if (cloudStats) {
+      // ── PRACTICE STATS ── (cloudStats === undefined means fetch failed)
+      if (cloudStats === undefined) {
+        // skip — preserve local state, retry on next hydrate
+      } else if (cloudStats) {
         const next = {
           total:   cloudStats.total   || 0,
           correct: cloudStats.correct || 0,
@@ -5154,8 +5186,10 @@ const mxSync = (function() {
         if (error) { _log('stats migrate err', error.message); allMigrationsOk = false; }
       }
 
-      // ── STREAK ──
-      if (cloudStreak) {
+      // ── STREAK ── (cloudStreak === undefined means fetch failed)
+      if (cloudStreak === undefined) {
+        // skip — preserve local state, retry on next hydrate
+      } else if (cloudStreak) {
         try {
           const localStreak = JSON.parse(localStorage.getItem('mathix_streak') || 'null') || {};
           const merged = {
@@ -5214,11 +5248,13 @@ const mxSync = (function() {
         _log('migration not flagged complete — will retry on next load');
       }
 
-      _startRealtime(uid);
       _log('hydrate done');
     } catch (err) {
       _log('hydrate threw', err?.message);
     } finally {
+      // Always start realtime — even if every fetch failed, live updates can
+      // still arrive and repair local state. Idempotent if already subscribed.
+      try { if (_user) _startRealtime(_user.id); } catch(_) {}
       _hydrating = false;
       // If a hydrate was requested while one was running, run it now
       if (_hydrateRequested) {
@@ -10255,11 +10291,66 @@ function initFormulas() {
    PWA — Service Worker Registration + Install Banner
 ═══════════════════════════════════════════════ */
 
-// Register service worker
+// Register service worker.
+// Update flow: when a new SW is detected and finishes installing while there is
+// already an active controller, we surface a toast so the user can reload into
+// the new version. If they ignore it, the new SW activates on next full close.
+// We also poll registration.update() once an hour as a belt-and-braces check
+// for long-lived tabs, and reload on `controllerchange` so the swap is clean.
 if ('serviceWorker' in navigator) {
+  let _swReloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_swReloading) return;
+    _swReloading = true;
+    location.reload();
+  });
+
+  function _promptSwUpdate(worker) {
+    const apply = () => {
+      try { worker.postMessage({ type: 'SKIP_WAITING' }); } catch(_) {}
+    };
+    if (typeof toast === 'function') {
+      try {
+        toast(t ? t('toast.updateReady') : 'A new version is available.', {
+          variant: 'info',
+          duration: 12000,
+          action: { label: t ? t('toast.reload') : 'Reload', onClick: apply },
+        });
+        return;
+      } catch(_) {}
+    }
+    // Fallback if toast() isn't ready yet — apply silently.
+    apply();
+  }
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('[PWA] Service worker registered, scope:', reg.scope))
+      .then(reg => {
+        console.log('[PWA] Service worker registered, scope:', reg.scope);
+
+        // If a worker is already waiting at registration time, prompt now.
+        if (reg.waiting && navigator.serviceWorker.controller) _promptSwUpdate(reg.waiting);
+
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener('statechange', () => {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              // A new version finished installing alongside the old one.
+              _promptSwUpdate(nw);
+            }
+          });
+        });
+
+        // Periodic update check for tabs that stay open all day.
+        setInterval(() => { try { reg.update(); } catch(_) {} }, 60 * 60 * 1000);
+        // Also check when the tab becomes visible again.
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            try { reg.update(); } catch(_) {}
+          }
+        });
+      })
       .catch(err => console.log('[PWA] SW registration failed (ok in dev):', err.message));
   });
 }
