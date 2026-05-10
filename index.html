@@ -3493,6 +3493,8 @@ const I18N = {
     'account.linkSent':'✓ Confirmation email sent — click the link to finish linking this device',
     'account.invalidEmail':'That doesn\'t look like a valid email',
     'account.signInError':'Could not send the link. Try again in a moment.',
+    'account.magicSentExisting':'✓ This email already has an account — we sent a sign-in link. Clicking it will switch this device to that account.',
+    'account.rateLimited':'Too many requests — please wait a minute before trying again.',
     'account.syncOn':'Synced across all your devices',
     'account.signOut':'Sign out',
     'account.signedOut':'Signed out',
@@ -3710,6 +3712,8 @@ const I18N = {
     'account.linkSent':'✓ Correo de confirmación enviado — pulsa el enlace para vincular este dispositivo',
     'account.invalidEmail':'No parece un email válido',
     'account.signInError':'No se pudo enviar el enlace. Inténtalo en un momento.',
+    'account.magicSentExisting':'✓ Este correo ya tiene una cuenta — te enviamos un enlace para iniciar sesión. Al pulsarlo, este dispositivo cambiará a esa cuenta.',
+    'account.rateLimited':'Demasiadas solicitudes — espera un minuto antes de volver a intentarlo.',
     'account.syncOn':'Sincronizado en todos tus dispositivos',
     'account.signOut':'Cerrar sesión',
     'account.signedOut':'Sesión cerrada',
@@ -3901,6 +3905,8 @@ const I18N = {
     'account.linkSent':'✓ E-mail de confirmation envoyé — cliquez pour lier cet appareil',
     'account.invalidEmail':'Cet email ne semble pas valide',
     'account.signInError':'Impossible d\'envoyer le lien. Réessayez dans un instant.',
+    'account.magicSentExisting':'✓ Cet email a déjà un compte — nous avons envoyé un lien de connexion. En cliquant dessus, cet appareil basculera sur ce compte.',
+    'account.rateLimited':'Trop de demandes — patientez une minute avant de réessayer.',
     'account.syncOn':'Synchronisé sur tous vos appareils',
     'account.signOut':'Se déconnecter',
     'account.signedOut':'Déconnecté',
@@ -4091,6 +4097,8 @@ const I18N = {
     'account.linkSent':'✓ Bestätigungs-Mail gesendet — klicke den Link, um dieses Gerät zu verbinden',
     'account.invalidEmail':'Das sieht nicht nach einer gültigen E-Mail aus',
     'account.signInError':'Konnte den Link nicht senden. Gleich erneut versuchen.',
+    'account.magicSentExisting':'✓ Diese E-Mail hat bereits ein Konto — wir haben einen Anmelde-Link gesendet. Mit dem Klick wechselt dieses Gerät zu jenem Konto.',
+    'account.rateLimited':'Zu viele Anfragen — bitte eine Minute warten, bevor du es erneut versuchst.',
     'account.syncOn':'Auf allen Geräten synchronisiert',
     'account.signOut':'Abmelden',
     'account.signedOut':'Abgemeldet',
@@ -4281,6 +4289,8 @@ const I18N = {
     'account.linkSent':'✓ 已发送确认邮件——点击链接完成此设备的绑定',
     'account.invalidEmail':'这个邮箱地址看起来不正确',
     'account.signInError':'发送链接失败，请稍后重试。',
+    'account.magicSentExisting':'✓ 该邮箱已有账户——我们已发送登录链接。点击后此设备将切换到该账户。',
+    'account.rateLimited':'请求过于频繁——请稍等一分钟后再试。',
     'account.syncOn':'已在所有设备同步',
     'account.signOut':'退出登录',
     'account.signedOut':'已退出登录',
@@ -5439,23 +5449,63 @@ const mxSync = (function() {
   }
 
   // ─── Auth API ───
+  function _classifyAuthError(err) {
+    if (!err) return '';
+    const code = (err.code || err.error_code || '').toString();
+    const status = err.status | 0;
+    const msg = (err.message || '').toLowerCase();
+    if (code === 'email_exists' || code === 'user_already_exists'
+        || msg.includes('email address has already been registered')
+        || msg.includes('already been registered')) return 'email_exists';
+    if (code === 'over_email_send_rate_limit' || status === 429
+        || msg.includes('rate limit')) return 'rate_limited';
+    if (code === 'validation_failed' || msg.includes('invalid email')) return 'invalid_email';
+    return '';
+  }
   async function signInWithEmail(email) {
     if (!_client) throw new Error('Supabase not configured');
     const trimmed = (email || '').trim().toLowerCase();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed)) throw new Error('invalid_email');
     const isAnonymous = !!_user?.is_anonymous;
+    const redirectTo = location.origin + location.pathname;
+
     if (isAnonymous) {
-      // Linking flow — preserves all data already stored under the anonymous user.id
+      // Try linking anonymous → email account first. Preserves user.id and all
+      // data already stored under the anonymous user when the email is unused.
       const { error } = await _client.auth.updateUser({ email: trimmed });
-      if (error) throw error;
-      return { linked: true };
+      if (!error) return { linked: true };
+
+      // If the email already belongs to an existing account, Supabase returns
+      // 422 email_exists. Linking is impossible — fall back to a magic-link
+      // sign-in for that existing account. The user will switch identities
+      // when they click the link; this device's anonymous-only local data
+      // will be replaced by the existing account's cloud data on hydrate
+      // (which is what the user wants — they're returning to their account).
+      const kind = _classifyAuthError(error);
+      if (kind === 'email_exists') {
+        const { error: otpErr } = await _client.auth.signInWithOtp({
+          email: trimmed,
+          options: { emailRedirectTo: redirectTo, shouldCreateUser: false },
+        });
+        if (otpErr) {
+          const k2 = _classifyAuthError(otpErr);
+          throw new Error(k2 || 'send_failed');
+        }
+        return { sent: true, existingAccount: true };
+      }
+      if (kind) throw new Error(kind);
+      throw new Error('send_failed');
     }
-    // Pure sign-in — magic link
+
+    // Already non-anonymous: pure magic-link sign-in
     const { error } = await _client.auth.signInWithOtp({
       email: trimmed,
-      options: { emailRedirectTo: location.origin + location.pathname },
+      options: { emailRedirectTo: redirectTo },
     });
-    if (error) throw error;
+    if (error) {
+      const kind = _classifyAuthError(error);
+      throw new Error(kind || 'send_failed');
+    }
     return { sent: true };
   }
   async function signOut() {
@@ -6491,14 +6541,20 @@ async function settingsSignIn() {
   try {
     const res = await mxSync.signInWithEmail(email);
     if (hint) {
-      hint.textContent = res.linked ? t('account.linkSent') : t('account.magicSent');
+      if (res.linked) hint.textContent = t('account.linkSent');
+      else if (res.existingAccount) hint.textContent = t('account.magicSentExisting');
+      else hint.textContent = t('account.magicSent');
       hint.classList.add('ok');
     }
-    track('auth_sign_in_requested', { linked: res.linked ? 1 : 0 });
+    track('auth_sign_in_requested', {
+      linked: res.linked ? 1 : 0,
+      existing: res.existingAccount ? 1 : 0,
+    });
   } catch (e) {
     if (hint) {
       const code = e && e.message;
       if (code === 'invalid_email') hint.textContent = t('account.invalidEmail');
+      else if (code === 'rate_limited') hint.textContent = t('account.rateLimited');
       else hint.textContent = t('account.signInError');
       hint.classList.remove('ok');
     }
