@@ -3470,7 +3470,9 @@ const I18N = {
     'sync.codeExpired':'That code has expired or already been used',
     'sync.imported':"✓ Synced! Your data is now on this device",
     'sync.error':'Sync failed — check your connection',
-    'confirm.sync.import':'Replace this device\'s data with the synced data?\n\nYour current settings, history, and practice stats will be overwritten.',
+    'confirm.sync.import':'Sign in as the source device on this device?\n\nYou\'ll see the source device\'s history, settings, and stats. New calculations on either device will sync continuously. Your current data on this device will no longer be visible unless you sign back in.',
+    'sync.notSignedIn':'Could not access your session. Try refreshing the page.',
+    'sync.notConfigured':'Sync is not available in this build.',
     'settings.section.privacy':'Privacy',
     'settings.section.privacy.desc':'Mathix collects anonymous usage data — page views, feature counts, error rates — to improve the app. Never your math expressions, never personal info.',
     'settings.toggle.shareUsage':'Share anonymous usage data',
@@ -3684,7 +3686,9 @@ const I18N = {
     'sync.codeExpired':'Ese código ha expirado o ya se ha usado',
     'sync.imported':'✓ ¡Sincronizado! Tus datos están ahora en este dispositivo',
     'sync.error':'Falló la sincronización — comprueba tu conexión',
-    'confirm.sync.import':'¿Reemplazar los datos de este dispositivo con los datos sincronizados?\n\nTus ajustes, historial y estadísticas actuales se sobrescribirán.',
+    'confirm.sync.import':'¿Iniciar sesión como el dispositivo origen?\n\nVerás el historial, ajustes y estadísticas del dispositivo origen. Los nuevos cálculos en cualquiera de los dos dispositivos se sincronizarán continuamente. Los datos actuales de este dispositivo dejarán de ser visibles a menos que vuelvas a iniciar sesión.',
+    'sync.notSignedIn':'No se pudo acceder a tu sesión. Recarga la página.',
+    'sync.notConfigured':'La sincronización no está disponible en esta versión.',
     'settings.section.privacy':'Privacidad',
     'settings.section.privacy.desc':'Mathix recopila datos de uso anónimos — visitas, conteos de funciones, tasas de error — para mejorar la app. Nunca tus expresiones, nunca info personal.',
     'settings.toggle.shareUsage':'Compartir datos de uso anónimos',
@@ -3872,7 +3876,9 @@ const I18N = {
     'sync.codeExpired':'Ce code a expiré ou a déjà été utilisé',
     'sync.imported':'✓ Synchronisé ! Vos données sont sur cet appareil',
     'sync.error':'Échec de la synchronisation — vérifiez votre connexion',
-    'confirm.sync.import':"Remplacer les données de cet appareil par celles synchronisées ?\n\nVos paramètres, historique et statistiques actuels seront écrasés.",
+    'confirm.sync.import':"Se connecter en tant que l'appareil source sur cet appareil ?\n\nVous verrez l'historique, les paramètres et les statistiques de l'appareil source. Les nouveaux calculs sur l'un ou l'autre appareil seront synchronisés en continu. Vos données actuelles ne seront plus visibles ici à moins de vous reconnecter.",
+    'sync.notSignedIn':"Impossible d'accéder à votre session. Rechargez la page.",
+    'sync.notConfigured':'La synchronisation n\'est pas disponible dans cette version.',
     'settings.section.privacy':'Confidentialité',
     'settings.section.privacy.desc':"Mathix collecte des données d'utilisation anonymes — visites, compteurs de fonctionnalités, taux d'erreur — pour améliorer l'app. Jamais vos expressions, jamais d'infos personnelles.",
     'settings.toggle.shareUsage':"Partager des données d'utilisation anonymes",
@@ -4059,7 +4065,9 @@ const I18N = {
     'sync.codeExpired':'Dieser Code ist abgelaufen oder wurde bereits benutzt',
     'sync.imported':'✓ Synchronisiert! Deine Daten sind jetzt auf diesem Gerät',
     'sync.error':'Sync fehlgeschlagen — Verbindung prüfen',
-    'confirm.sync.import':'Daten auf diesem Gerät durch die synchronisierten ersetzen?\n\nAktuelle Einstellungen, Verlauf und Statistik werden überschrieben.',
+    'confirm.sync.import':'Auf diesem Gerät als Quellgerät anmelden?\n\nDu siehst Verlauf, Einstellungen und Statistik des Quellgeräts. Neue Berechnungen auf einem der Geräte werden fortlaufend synchronisiert. Deine aktuellen Daten hier sind nicht mehr sichtbar, bis du dich wieder anmeldest.',
+    'sync.notSignedIn':'Sitzung nicht verfügbar. Lade die Seite neu.',
+    'sync.notConfigured':'Sync ist in diesem Build nicht verfügbar.',
     'settings.section.privacy':'Datenschutz',
     'settings.section.privacy.desc':'Mathix sammelt anonyme Nutzungsdaten — Seitenaufrufe, Feature-Zähler, Fehlerraten — um die App zu verbessern. Niemals deine Ausdrücke, niemals persönliche Daten.',
     'settings.toggle.shareUsage':'Anonyme Nutzungsdaten teilen',
@@ -4246,7 +4254,9 @@ const I18N = {
     'sync.codeExpired':'代码已过期或已使用',
     'sync.imported':'✓ 已同步！数据已导入此设备',
     'sync.error':'同步失败——请检查网络',
-    'confirm.sync.import':'用同步的数据替换此设备的数据吗？\n\n你当前的设置、历史和练习统计将被覆盖。',
+    'confirm.sync.import':'在此设备上以源设备的身份登录？\n\n你将看到源设备的历史、设置和统计。任何一台设备上的新计算都会持续同步。在此设备上的当前数据将不再可见，除非你重新登录。',
+    'sync.notSignedIn':'无法访问会话，请刷新页面。',
+    'sync.notConfigured':'此版本不支持同步。',
     'settings.section.privacy':'隐私',
     'settings.section.privacy.desc':'Mathix 收集匿名使用数据——页面访问、功能计数、错误率——以改进应用。不会收集你的数学表达式，不会收集个人信息。',
     'settings.toggle.shareUsage':'共享匿名使用数据',
@@ -6140,7 +6150,33 @@ async function settingsGenerateSyncCode() {
   btn.textContent = '…';
   display.textContent = '';
   try {
-    const payload = { settings, history, practiceStats };
+    // v2 sync codes transfer the AUTH SESSION itself, not a snapshot of data.
+    // The destination device signs in as this device's Supabase user — both then
+    // share an identity, so cloud history/settings/stats sync naturally via the
+    // existing realtime + hydrate paths. New data on either device propagates
+    // both ways (it's the same user). The previous v1 snapshot approach gave
+    // ephemeral data that reverted on refresh because the destination device
+    // remained on its own separate user.
+    const sb = await getSupabase();
+    if (!sb) throw new Error('not_configured');
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.access_token || !session.refresh_token) {
+      // Without a session there is nothing to transfer. The app initializes an
+      // anonymous user on launch, so this should be rare — but if anonymous
+      // sign-in is disabled in the dashboard, we surface a clear error instead
+      // of silently sending an empty payload.
+      throw new Error('no_session');
+    }
+    const payload = {
+      v: 2,
+      tokens: {
+        access_token:  session.access_token,
+        refresh_token: session.refresh_token,
+      },
+      user_id:      session.user?.id || null,
+      is_anonymous: !!session.user?.is_anonymous,
+      email:        session.user?.email || null,
+    };
     const resp = await fetch(SYNC_BASE + '/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Device-Id': DEVICE_ID },
@@ -6150,10 +6186,13 @@ async function settingsGenerateSyncCode() {
     const data = await resp.json();
     if (!data.code) throw new Error('No code returned');
     display.innerHTML = `<span class="sync-code">${data.code}</span><span class="sync-code-hint">${escapeHtml(t('sync.codeExpires'))}</span>`;
-    track('sync_code_generated');
+    track('sync_code_generated', { v: 2 });
   } catch(e) {
-    display.textContent = t('sync.error');
-    toast(t('sync.error'), { variant: 'error' });
+    const msg = e && e.message === 'no_session'      ? t('sync.notSignedIn')
+              : e && e.message === 'not_configured'  ? t('sync.notConfigured')
+              :                                        t('sync.error');
+    display.textContent = msg;
+    toast(msg, { variant: 'error' });
   } finally {
     btn.disabled = false;
     btn.textContent = t('sync.generate');
@@ -6183,7 +6222,68 @@ async function settingsRedeemSyncCode() {
     const data = await resp.json();
     const p = data.payload;
     if (!p || typeof p !== 'object') throw new Error('Bad payload');
-    // Merge — language preserved from current device unless target sets one explicitly
+
+    // ─── v2: SESSION TRANSFER ───────────────────────────────────────────────
+    // The source device shipped its access+refresh tokens. We sign in as that
+    // user, which makes both devices share a single Supabase identity. From
+    // here on, hydrate() pulls the source user's cloud data, realtime delivers
+    // future writes from the source device, and our own writes go to the same
+    // user — so a refresh on either side keeps everything in sync.
+    if (p.v === 2 && p.tokens && p.tokens.access_token && p.tokens.refresh_token) {
+      const sb = await getSupabase();
+      if (!sb) throw new Error('not_configured');
+
+      // Preserve the user's PER-DEVICE preferences (language, theme, accent,
+      // text size, etc.) — if they're using French on this phone they don't
+      // suddenly want the source device's English. Synced/account-level state
+      // (history, practice stats, streak) belongs to the user, not the device.
+      const PER_DEVICE_KEYS = ['language','theme','accent','fontSize','reduceMotion','compactMode','startTab'];
+      const preserved = {};
+      for (const k of PER_DEVICE_KEYS) preserved[k] = settings[k];
+
+      // Clear any local data that's about to be replaced by the source user's
+      // cloud data, so hydrate's "is local empty?" check doesn't accidentally
+      // upload our old local data into the source user's account.
+      history = [];
+      practiceStats = { total:0, correct:0, streak:0, best:0 };
+      try {
+        localStorage.removeItem('mathix_hist');
+        localStorage.removeItem('mathix_stats');
+        localStorage.removeItem('mathix_streak');
+      } catch(_) {}
+
+      // Switch identity. setSession persists the new tokens via the SDK's
+      // configured storage, and emits SIGNED_IN. Our onAuthStateChange handler
+      // detects the user-id change and queues a hydrate, but we also call it
+      // explicitly here so the success toast fires AFTER the data lands.
+      const { error } = await sb.auth.setSession({
+        access_token:  p.tokens.access_token,
+        refresh_token: p.tokens.refresh_token,
+      });
+      if (error) throw error;
+
+      // Re-apply per-device prefs (the cloud hydrate might also push down the
+      // source user's settings — that's fine, but per-device prefs win locally).
+      for (const k of PER_DEVICE_KEYS) {
+        if (preserved[k] != null) settings[k] = preserved[k];
+      }
+      persistSettings();
+      applySettings();
+
+      // Pull the source user's data now (don't wait for the listener race)
+      try { await mxSync.hydrate(); } catch(_) {}
+
+      syncSettingsUI();
+      if (typeof renderAccountSection === 'function') renderAccountSection();
+      inp.value = '';
+      toast(t('sync.imported'), { variant: 'success' });
+      track('sync_code_redeemed', { mode: 'session' });
+      return;
+    }
+
+    // ─── v1: legacy snapshot (back-compat for codes already in flight) ──────
+    // Older codes contain a one-shot copy of {settings, history, practiceStats}.
+    // We keep this path so redeem-codes generated before this update don't break.
     if (p.settings) {
       settings = Object.assign({}, SETTINGS_DEFAULTS, p.settings);
       persistSettings();
